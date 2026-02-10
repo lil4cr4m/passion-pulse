@@ -39,3 +39,31 @@ export const createNote = async (req, res) => {
     res.status(500).json({ error: "Failed to send gratitude note" });
   }
 };
+
+/**
+ * GET NOTES FOR A USER'S PULSES
+ * Returns gratitude notes left on any pulse created by the given user.
+ */
+export const getUserNotes = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const notes = await query(
+      `SELECT gn.id,
+              gn.content,
+              gn.created_at,
+              p.title AS pulse_title,
+              u.username AS sender_username
+       FROM gratitude_notes gn
+       JOIN pulses p ON gn.pulse_id = p.id
+       LEFT JOIN users u ON gn.sender_id = u.id
+       WHERE p.creator_id = $1
+       ORDER BY gn.created_at DESC`,
+      [userId],
+    );
+
+    res.json(notes.rows);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch gratitude notes" });
+  }
+};

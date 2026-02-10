@@ -55,6 +55,48 @@ export const createPulse = async (req, res) => {
 };
 
 /**
+ * UPDATE PULSE
+ * Allows a creator (or admin) to edit the pulse details.
+ */
+export const updatePulse = async (req, res) => {
+  const { id } = req.params;
+  const { interest_id, title, description, meeting_link, is_live } = req.body;
+
+  try {
+    const updated = await query(
+      `UPDATE pulses
+       SET interest_id = COALESCE($3, interest_id),
+           title = COALESCE($4, title),
+           description = COALESCE($5, description),
+           meeting_link = COALESCE($6, meeting_link),
+           is_live = COALESCE($7, is_live)
+       WHERE id = $1 AND (creator_id = $2 OR $8 = 'admin')
+       RETURNING *`,
+      [
+        id,
+        req.user.id,
+        interest_id,
+        title,
+        description,
+        meeting_link,
+        is_live,
+        req.user.role,
+      ],
+    );
+
+    if (updated.rowCount === 0) {
+      return res
+        .status(404)
+        .json({ error: "Pulse not found or permission denied" });
+    }
+
+    res.json(updated.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: "Could not update pulse" });
+  }
+};
+
+/**
  * DELETE PULSE
  * Requirement 1.3: Admins or Creators only
  */

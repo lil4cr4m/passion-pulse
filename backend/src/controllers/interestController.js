@@ -16,6 +16,29 @@ export const getAllInterests = async (req, res) => {
 };
 
 /**
+ * GET USER'S INTERESTS
+ * Returns the vibe list pinned to a specific user's profile.
+ */
+export const getUserInterests = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const result = await query(
+      `SELECT i.*
+       FROM user_interests ui
+       JOIN interests i ON ui.interest_id = i.id
+       WHERE ui.user_id = $1
+       ORDER BY i.vibe_category, i.name`,
+      [userId],
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch user interests" });
+  }
+};
+
+/**
  * ADD USER INTEREST
  * Pins a vibe to the user's persistent profile (Requirement 1.7)
  */

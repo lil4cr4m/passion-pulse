@@ -21,7 +21,12 @@ const PORT = process.env.PORT || 5000;
 // ==========================================
 // MIDDLEWARE
 // ==========================================
-app.use(cors()); // Allow Frontend to talk to Backend
+app.use(
+  cors({
+    origin: "http://localhost:5173", // or '*' to allow everything during testing
+    credentials: true,
+  }),
+); // Allow Frontend to talk to Backend
 app.use(express.json()); // Parse incoming JSON requests
 
 // ==========================================
@@ -29,17 +34,6 @@ app.use(express.json()); // Parse incoming JSON requests
 // ==========================================
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "active", timestamp: new Date() });
-});
-
-// Global 404 Handler
-app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
-});
-
-// Global Error Handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Internal Server Error" });
 });
 
 // ==========================================
@@ -50,6 +44,18 @@ app.use("/api/users", userRoutes); // Profiles & Leaderboards
 app.use("/api/pulses", pulseRoutes); // Live Now signals
 app.use("/api/interests", interestRoutes); // Vibe Catalog
 app.use("/api/notes", noteRoutes); // Gratitude & Karma
+
+// ==========================================
+// FALLBACKS & ERROR HANDLER
+// ==========================================
+app.use((req, res) => {
+  res.status(404).json({ error: "Route not found" });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Internal Server Error" });
+});
 
 // ==========================================
 // SERVER INITIALIZATION

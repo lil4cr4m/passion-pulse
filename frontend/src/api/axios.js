@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5001/api",
+  // Default backend port is 5000; can override via VITE_API_URL
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 });
 
 // Automatically add the Access Token to every request
@@ -20,14 +21,13 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // If token expired, try to refresh once
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         const refreshToken = localStorage.getItem("refreshToken");
-        const res = await axios.post(
-          `${api.defaults.baseURL}/auth/refresh-token`,
-          { token: refreshToken },
-        );
+        const res = await axios.post(`${api.defaults.baseURL}/auth/refresh`, {
+          token: refreshToken,
+        });
 
         localStorage.setItem("accessToken", res.data.accessToken);
         return api(originalRequest);
