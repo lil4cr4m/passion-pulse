@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { query } from "../config/db.js";
+import { logError } from "../utils/logger.js";
 
 // Prefer dedicated refresh secret; fall back to JWT_SECRET if not provided so login doesn't crash
 const ACCESS_SECRET = process.env.JWT_SECRET;
@@ -47,6 +48,7 @@ export const register = async (req, res) => {
     );
     res.status(201).json(newUser.rows[0]);
   } catch (err) {
+    logError("authController.register", err, { email, username });
     res
       .status(500)
       .json({ error: "Registration failed: Email/Username likely taken." });
@@ -87,7 +89,7 @@ export const login = async (req, res) => {
       user: { id: user.id, username: user.username, role: user.role },
     });
   } catch (err) {
-    console.error("🔥 LOGIN CRASH ERROR:", err);
+    logError("authController.login", err, { email });
     res.status(500).json({ error: "Login server error" });
   }
 };
@@ -117,7 +119,7 @@ export const refreshToken = async (req, res) => {
     const newTokens = generateTokens(user.rows[0]);
     res.json({ accessToken: newTokens.accessToken });
   } catch (err) {
-    console.error("🔥 REFRESH TOKEN ERROR:", err);
+    logError("authController.refreshToken", err);
     res.status(403).json({ error: "Invalid refresh token" });
   }
 };
@@ -132,7 +134,7 @@ export const logout = async (req, res) => {
     await query("DELETE FROM refresh_tokens WHERE token = $1", [token]);
     res.json({ message: "Logged out successfully" });
   } catch (err) {
-    console.error("🔥 LOGOUT ERROR:", err);
+    logError("authController.logout", err);
     res.status(500).json({ error: "Logout failed" });
   }
 };

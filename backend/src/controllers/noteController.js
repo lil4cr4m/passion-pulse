@@ -1,4 +1,5 @@
 import { query } from "../config/db.js";
+import { logError } from "../utils/logger.js";
 
 /**
  * SEND GRATITUDE
@@ -36,6 +37,7 @@ export const createNote = async (req, res) => {
       note: newNote.rows[0],
     });
   } catch (err) {
+    logError("noteController.createNote", err, { pulse_id });
     res.status(500).json({ error: "Failed to send gratitude note" });
   }
 };
@@ -64,6 +66,7 @@ export const getUserNotes = async (req, res) => {
 
     res.json(notes.rows);
   } catch (err) {
+    logError("noteController.getUserNotes", err, { userId });
     res.status(500).json({ error: "Failed to fetch gratitude notes" });
   }
 };

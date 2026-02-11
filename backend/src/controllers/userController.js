@@ -1,4 +1,5 @@
 import { query } from "../config/db.js";
+import { logError } from "../utils/logger.js";
 
 /**
  * GET USER PROFILE & STATS
@@ -25,6 +26,7 @@ export const getProfile = async (req, res) => {
 
     res.json(userStats.rows[0]);
   } catch (err) {
+    logError("userController.getProfile", err, { id });
     res.status(500).json({ error: "Failed to fetch user profile" });
   }
 };
@@ -40,6 +42,7 @@ export const getLeaderboard = async (req, res) => {
     );
     res.json(leaders.rows);
   } catch (err) {
+    logError("userController.getLeaderboard", err);
     res.status(500).json({ error: "Failed to fetch leaderboard" });
   }
 };

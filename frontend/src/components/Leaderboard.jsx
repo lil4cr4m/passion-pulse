@@ -8,9 +8,18 @@ const Leaderboard = () => {
 
   useEffect(() => {
     const fetchLeaders = async () => {
-      // Hits the endpoint created in userRoutes
-      const res = await api.get("/users/leaderboard");
-      setLeaders(res.data);
+      try {
+        // Hits the endpoint created in userRoutes
+        const res = await api.get("/users/leaderboard");
+        setLeaders(res.data);
+      } catch (err) {
+        console.error("[Leaderboard] Failed to load leaderboard", {
+          message: err?.message,
+          status: err?.response?.status,
+          data: err?.response?.data,
+        });
+        setLeaders([]);
+      }
     };
     fetchLeaders();
   }, []);

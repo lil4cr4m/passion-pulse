@@ -15,7 +15,11 @@ const PulseFeed = ({ selectedCategory }) => {
         });
         setPulses(res.data);
       } catch (err) {
-        console.error("Failed to load pulses", err);
+        console.error("[PulseFeed] Failed to load pulses", {
+          message: err?.message,
+          status: err?.response?.status,
+          data: err?.response?.data,
+        });
         setPulses([]);
       } finally {
         setLoading(false);

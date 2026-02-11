@@ -1,4 +1,5 @@
 import { query } from "../config/db.js";
+import { logError } from "../utils/logger.js";
 
 /**
  * GET ALL INTERESTS
@@ -11,6 +12,7 @@ export const getAllInterests = async (req, res) => {
     );
     res.json(result.rows);
   } catch (err) {
+    logError("interestController.getAllInterests", err);
     res.status(500).json({ error: "Failed to fetch vibe catalog" });
   }
 };
@@ -34,6 +36,7 @@ export const getUserInterests = async (req, res) => {
 
     res.json(result.rows);
   } catch (err) {
+    logError("interestController.getUserInterests", err, { userId });
     res.status(500).json({ error: "Failed to fetch user interests" });
   }
 };
@@ -55,6 +58,10 @@ export const addUserInterest = async (req, res) => {
     );
     res.status(201).json({ message: "Vibe pinned to profile" });
   } catch (err) {
+    logError("interestController.addUserInterest", err, {
+      userId: req.user.id,
+      interestId,
+    });
     res.status(500).json({ error: "Could not update profile interests" });
   }
 };

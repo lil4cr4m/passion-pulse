@@ -1,4 +1,5 @@
 import { query } from "../config/db.js";
+import { logError } from "../utils/logger.js";
 
 /**
  * GET PULSE FEED
@@ -25,6 +26,7 @@ export const getAllPulses = async (req, res) => {
     const pulses = await query(queryText, params);
     res.json(pulses.rows);
   } catch (err) {
+    logError("pulseController.getAllPulses", err, { category });
     res.status(500).json({ error: "Failed to fetch pulse feed" });
   }
 };
@@ -50,6 +52,7 @@ export const createPulse = async (req, res) => {
     );
     res.status(201).json(newPulse.rows[0]);
   } catch (err) {
+    logError("pulseController.createPulse", err, { interest_id, title });
     res.status(500).json({ error: "Could not broadcast pulse" });
   }
 };
@@ -92,6 +95,7 @@ export const updatePulse = async (req, res) => {
 
     res.json(updated.rows[0]);
   } catch (err) {
+    logError("pulseController.updatePulse", err, { id });
     res.status(500).json({ error: "Could not update pulse" });
   }
 };
@@ -115,6 +119,7 @@ export const deletePulse = async (req, res) => {
 
     res.json({ message: "Pulse signal terminated" });
   } catch (err) {
+    logError("pulseController.deletePulse", err, { id: req.params.id });
     res.status(500).json({ error: "Deletion failed" });
   }
 };
@@ -140,6 +145,7 @@ export const endPulse = async (req, res) => {
       pulse: result.rows[0],
     });
   } catch (err) {
+    logError("pulseController.endPulse", err, { id });
     res.status(500).json({ error: "Failed to end pulse" });
   }
 };

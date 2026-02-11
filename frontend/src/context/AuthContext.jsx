@@ -29,6 +29,11 @@ export const AuthProvider = ({ children }) => {
         const res = await api.post("/auth/refresh", { token: refreshToken });
         localStorage.setItem("accessToken", res.data.accessToken);
       } catch (err) {
+        console.error("[AuthContext] Refresh failed", {
+          message: err?.message,
+          status: err?.response?.status,
+          data: err?.response?.data,
+        });
         localStorage.clear();
         setUser(null);
       } finally {
@@ -40,13 +45,22 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const res = await api.post("/auth/login", { email, password });
-    const { accessToken, refreshToken, user: userPayload } = res.data;
+    try {
+      const res = await api.post("/auth/login", { email, password });
+      const { accessToken, refreshToken, user: userPayload } = res.data;
 
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-    localStorage.setItem("user", JSON.stringify(userPayload));
-    setUser(userPayload);
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("user", JSON.stringify(userPayload));
+      setUser(userPayload);
+    } catch (err) {
+      console.error("[AuthContext] Login failed", {
+        message: err?.message,
+        status: err?.response?.status,
+        data: err?.response?.data,
+      });
+      throw err;
+    }
   };
 
   const logout = () => {
