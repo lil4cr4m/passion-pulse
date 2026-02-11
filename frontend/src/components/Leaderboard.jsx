@@ -11,7 +11,6 @@ const Leaderboard = () => {
         const res = await api.get("/users/leaderboard");
         setLeaders(res.data);
       } catch (err) {
-        console.error("[Leaderboard] Sync Error", err);
         setLeaders([]);
       }
     };
@@ -24,7 +23,7 @@ const Leaderboard = () => {
         <Link
           key={leader.id}
           to={`/profile/${leader.id}`}
-          className="group grid grid-cols-[1.75rem_1fr_auto] items-center gap-[0.6rem] p-[1rem] hover:bg-violet/5 transition-all min-w-0"
+          className="group grid grid-cols-[1.75rem_1fr_auto] items-center gap-[0.6rem] p-[1rem] hover:bg-yellow/10 transition-all min-w-0"
         >
           <span className="font-black italic text-ink/20 text-[1rem] xl:text-[1.125rem] leading-none text-center">
             {index + 1}

@@ -20,7 +20,7 @@ const Profile = () => {
         const res = await api.get(`/users/profile/${id}`);
         setProfile(res.data);
       } catch (err) {
-        console.error("FAILED_TO_SYNC_PROFILE", err);
+        setProfile(null);
       }
     };
     fetchProfile();
@@ -49,8 +49,8 @@ const Profile = () => {
         <div className="absolute top-0 right-0 w-32 h-32 bg-cyan/10 -mr-16 -mt-16 rounded-full border-3 border-ink" />
 
         <div className="flex flex-col items-center gap-3">
-          <div className="h-32 w-32 md:h-40 md:w-40 bg-yellow border-3 border-ink rounded-full flex items-center justify-center shadow-brutal shrink-0 overflow-hidden">
-            <User size={64} className="text-ink" />
+          <div className="h-32 w-32 md:h-40 md:w-40 bg-pink border-3 border-ink rounded-full flex items-center justify-center shadow-brutal shrink-0 overflow-hidden">
+            <User size={64} className="text-white" />
           </div>
         </div>
 
@@ -86,7 +86,7 @@ const Profile = () => {
             onClick={() => navigate("/settings/profile")}
             className="flex items-center gap-2 py-3 px-6 shadow-brutal-sm w-full justify-center"
           >
-            <Edit3 size={18} /> Edit Profile
+            <Edit3 size={18} /> EDIT_SIGNAL
           </Button>
         </div>
       )}
@@ -114,16 +114,16 @@ const Profile = () => {
         </div>
 
         <div className="bg-pink border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center text-white gap-3">
-          <Heart size={32} fill="currentColor" />
+          <Heart size={32} className="text-white" />
           <div className="text-5xl font-black tabular-nums leading-tight text-center">
             {profile.notes_received}
           </div>
-          <div className="font-black text-[10px] uppercase tracking-widest italic opacity-70 text-center">
+          <div className="font-black text-[10px] uppercase tracking-widest italic opacity-80 text-center">
             Gratitude_Notes
           </div>
         </div>
 
-        <div className="bg-white border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center gap-3 justify-center">
+        <div className="bg-cyan border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center gap-3 justify-center text-ink">
           <div className="font-black uppercase text-xs tracking-widest text-center">
             {profile.role || "Member"}
           </div>

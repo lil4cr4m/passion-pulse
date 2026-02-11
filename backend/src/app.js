@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { logError } from "./utils/logger.js";
 
 // Import Routes
 import authRoutes from "./routes/authRoutes.js";
@@ -65,16 +66,13 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  logError("app", err);
   res.status(500).json({ error: "Internal Server Error" });
 });
 
 // ==========================================
 // SERVER INITIALIZATION
 // ==========================================
-app.listen(PORT, () => {
-  console.log(`🚀 Server running in 2026 mode on http://localhost:${PORT}`);
-  console.log(`📈 Check health at http://localhost:${PORT}/api/health`);
-});
+app.listen(PORT, () => {});
 
 export default app;

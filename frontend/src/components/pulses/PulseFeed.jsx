@@ -21,8 +21,6 @@ const PulseFeed = ({ selectedCategory, searchQuery }) => {
         const res = await api.get("/pulses", { params });
         setPulses(res.data);
       } catch (err) {
-        // Detailed error logging for debugging API mismatches
-        console.error("[PulseFeed] Data Sync Error:", err?.message);
         setPulses([]);
       } finally {
         setLoading(false);
@@ -31,6 +29,16 @@ const PulseFeed = ({ selectedCategory, searchQuery }) => {
 
     fetchPulses();
   }, [selectedCategory, searchQuery]); // Refetch when category filter or search changes
+
+  const handlePulseUpdate = (updatedPulse) => {
+    setPulses((prev) =>
+      prev.map((p) => (p.id === updatedPulse.id ? updatedPulse : p)),
+    );
+  };
+
+  const handlePulseDelete = (pulseId) => {
+    setPulses((prev) => prev.filter((p) => p.id !== pulseId));
+  };
 
   // LOADING STATE: Consistent with the app's font style
   if (loading) {
@@ -48,7 +56,7 @@ const PulseFeed = ({ selectedCategory, searchQuery }) => {
         <p className="font-black text-ink/40 uppercase tracking-widest mb-4">
           No Active Signals
         </p>
-        <p className="text-ink font-bold italic underline decoration-yellow decoration-4">
+        <p className="text-ink font-bold italic underline decoration-violet decoration-4">
           Be the first to go live!
         </p>
       </div>
@@ -59,7 +67,12 @@ const PulseFeed = ({ selectedCategory, searchQuery }) => {
   return (
     <div className="grid grid-cols-1 gap-8">
       {pulses.map((pulse) => (
-        <PulseCard key={pulse.id} pulse={pulse} />
+        <PulseCard
+          key={pulse.id}
+          pulse={pulse}
+          onUpdate={handlePulseUpdate}
+          onDelete={handlePulseDelete}
+        />
       ))}
     </div>
   );

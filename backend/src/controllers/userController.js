@@ -39,7 +39,10 @@ export const updateProfile = async (req, res) => {
   const { id } = req.params;
   const { name, bio } = req.body;
 
-  if (!req.user || (req.user.id !== id && req.user.role !== "admin")) {
+  const isOwner = req.user && req.user.id?.toString() === id?.toString();
+  const isAdmin = req.user && req.user.role === "admin";
+
+  if (!isOwner && !isAdmin) {
     return res.status(403).json({ error: "Forbidden" });
   }
 

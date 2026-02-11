@@ -11,6 +11,7 @@ export const Button = ({
     violet: "bg-violet text-white hover:bg-[#8f47ff]",
     pink: "bg-pink text-white hover:bg-[#e632e6]",
     cyan: "bg-cyan text-ink hover:bg-[#00c9e6]",
+    neon: "bg-[#39ff14] text-ink hover:bg-[#2ddc10]",
     outline: "bg-white text-ink hover:bg-slate-50",
   };
 

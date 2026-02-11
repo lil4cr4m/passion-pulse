@@ -79,7 +79,7 @@ const Login = () => {
             </p>
 
             <Button
-              variant="pink"
+              variant="cyan"
               className="w-full py-4 text-lg"
               onClick={handleLogoutAction}
             >

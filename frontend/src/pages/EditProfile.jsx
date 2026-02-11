@@ -43,7 +43,6 @@ const EditProfile = () => {
 
       navigate(`/profile/${user.id}`);
     } catch (err) {
-      console.error("UPDATE_FAILED", err);
       alert("Failed to update profile signal.");
     } finally {
       setLoading(false);
@@ -229,7 +228,7 @@ const EditProfile = () => {
 
           <Button
             type="submit"
-            variant="pink"
+            variant="cyan"
             className="w-full py-4 text-lg shadow-brutal hover:shadow-brutal-lg"
             disabled={pwLoading}
           >

@@ -2,7 +2,13 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "../ui/Button";
-import { LogOut, LogIn, Activity, User as UserIcon } from "lucide-react";
+import {
+  LogOut,
+  LogIn,
+  Activity,
+  User as UserIcon,
+  Home as HomeIcon,
+} from "lucide-react";
 
 export const Navbar = () => {
   const { pathname } = useLocation();
@@ -14,7 +20,7 @@ export const Navbar = () => {
       await logout();
       navigate("/login");
     } catch (err) {
-      console.error("LOGOUT_INTERRUPTED", err);
+      navigate("/login");
     }
   };
 
@@ -31,13 +37,13 @@ export const Navbar = () => {
         <div className="flex items-center gap-4 md:gap-8">
           <Link
             to="/"
-            className={`font-black uppercase text-sm tracking-tight ${
+            className={`font-black uppercase text-sm tracking-tight flex items-center gap-2 ${
               pathname === "/"
-                ? "text-pink underline decoration-4 underline-offset-4"
+                ? "text-violet underline decoration-4 underline-offset-4"
                 : "hover:text-violet"
             }`}
           >
-            Feed
+            <HomeIcon size={16} /> Feed
           </Link>
 
           {user ? (
@@ -54,14 +60,8 @@ export const Navbar = () => {
                 <UserIcon size={16} /> Profile
               </Link>
 
-              <Link to="/create">
-                <Button variant="yellow" className="py-2 text-xs px-4">
-                  <Activity size={14} className="mr-1" /> Go Live
-                </Button>
-              </Link>
-
               <Button
-                variant="pink"
+                variant="cyan"
                 className="py-2 text-xs px-4 shadow-brutal-sm"
                 onClick={handleLogout}
               >

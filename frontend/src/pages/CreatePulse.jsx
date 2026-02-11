@@ -24,7 +24,7 @@ const CreatePulse = () => {
         const res = await api.get("/interests");
         setInterests(res.data);
       } catch (err) {
-        console.error("Failed to load categories", err);
+        setInterests([]);
       } finally {
         setLoading(false);
       }
@@ -129,7 +129,7 @@ const CreatePulse = () => {
           <div className="pt-6">
             <Button
               type="submit"
-              variant="yellow"
+              variant="violet"
               className="w-full py-5 text-xl shadow-brutal hover:shadow-brutal-lg"
               disabled={loading}
             >
