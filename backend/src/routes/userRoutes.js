@@ -3,6 +3,8 @@ import {
   getProfile,
   updateProfile,
   getLeaderboard,
+  getAllUsers,
+  deleteUser,
 } from "../controllers/userController.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 
@@ -21,5 +23,14 @@ router.get("/profile/:id", getProfile);
  * PROTECTED ROUTES (Optional additions)
  */
 router.put("/profile/:id", authenticateToken, updateProfile);
+
+/**
+ * ADMIN ROUTES
+ */
+// Get all users (admin only)
+router.get("/admin/all", authenticateToken, getAllUsers);
+
+// Delete a user (admin only)
+router.delete("/:id", authenticateToken, deleteUser);
 
 export default router;

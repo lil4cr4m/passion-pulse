@@ -23,7 +23,7 @@ const Home = () => {
       >
         <div className="bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h1 className="text-3xl font-black uppercase tracking-tighter mb-4">
-            USER//{" "}
+            {user?.role === "admin" ? "ADMIN" : "USER"}//{" "}
             <span className="text-violet italic">
               {user?.username || "Guest"}
             </span>

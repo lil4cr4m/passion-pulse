@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { Button } from "../ui/Button";
-import CreditForm from "../CreditForm";
-import api from "../../api/axios";
+import { useAuth } from "../context/AuthContext";
+import { Button } from "./ui/Button";
+import CreditForm from "./CreditForm";
+import api from "../api/axios";
 import {
   ExternalLink,
   Heart,
@@ -94,15 +94,20 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
         </div>
       </div>
 
-      <Button
-        variant="violet"
-        className="w-full mb-3"
-        onClick={() => window.open(cast.meeting_link)}
-      >
-        JOIN_CAST →
-      </Button>
-
       <div className="flex gap-3">
+        <a
+          href={cast.meeting_link}
+          target="_blank"
+          rel="noreferrer"
+          className="flex-1"
+        >
+          <Button
+            variant="violet"
+            className="w-full flex items-center justify-center gap-2"
+          >
+            JOIN_CAST <ExternalLink size={16} />
+          </Button>
+        </a>
         {user && !isOwner && (
           <Button
             variant="outline"
@@ -115,19 +120,6 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
             />
           </Button>
         )}
-        <a
-          href={cast.meeting_link}
-          target="_blank"
-          rel="noreferrer"
-          className="flex-1"
-        >
-          <Button
-            variant="yellow"
-            className="w-full flex items-center justify-center gap-2"
-          >
-            Join Lobby <ExternalLink size={16} />
-          </Button>
-        </a>
       </div>
 
       {showCreditForm && (
@@ -193,7 +185,7 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
           ) : (
             <div className="flex gap-2">
               <Button
-                variant="violet"
+                variant="cyan"
                 className="flex-1"
                 onClick={() => setEditMode(true)}
               >
@@ -201,7 +193,7 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
               </Button>
               <Button
                 type="button"
-                variant="pink"
+                variant="cyan"
                 className="flex-1"
                 onClick={handleDelete}
                 disabled={deleting}

@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import CreateCast from "./pages/CreateCast";
+import AdminUsers from "./pages/AdminUsers";
 
 /**
  * MAIN APP COMPONENT

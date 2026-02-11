@@ -81,3 +81,58 @@ export const getLeaderboard = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch leaderboard" });
   }
 };
+
+/**
+ * GET ALL USERS (ADMIN ONLY)
+ * Fetches all users for admin management dashboard.
+ */
+export const getAllUsers = async (req, res) => {
+  // Admin-only check
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ error: "Forbidden - Admin only" });
+  }
+
+  try {
+    const users = await query(
+      `SELECT id, username, email, name, bio, credit, role, created_at, updated_at
+       FROM users
+       ORDER BY created_at DESC`,
+    );
+    res.json(users.rows);
+  } catch (err) {
+    logError("userController.getAllUsers", err);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+};
+
+/**
+ * DELETE USER (ADMIN ONLY)
+ * Removes a user from the database.
+ */
+export const deleteUser = async (req, res) => {
+  // Admin-only check
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ error: "Forbidden - Admin only" });
+  }
+
+  const { id } = req.params;
+
+  try {
+    // Prevent self-deletion
+    if (req.user.id?.toString() === id?.toString()) {
+      return res.status(400).json({ error: "Cannot delete your own account" });
+    }
+
+    // Perform deletion (cascade handles related records)
+    const result = await query("DELETE FROM users WHERE id = $1 RETURNING id", [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ message: "User deleted successfully", id: result.rows[0].id });
+  } catch (err) {
+    logError("userController.deleteUser", err, { id });
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+};

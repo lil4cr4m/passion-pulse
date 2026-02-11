@@ -92,6 +92,8 @@ app.use((err, req, res, next) => {
 // ==========================================
 // SERVER INITIALIZATION
 // ==========================================
-app.listen(PORT, () => {});
+app.listen(PORT, () => {
+  console.log(`✓ Server listening on port ${PORT}`);
+});
 
 export default app;
