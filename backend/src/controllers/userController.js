@@ -11,7 +11,7 @@ export const getProfile = async (req, res) => {
     const userStats = await query(
       `
         SELECT 
-            u.id, u.username, u.name, u.bio, u.karma, u.role,
+          u.id, u.username, u.name, u.bio, u.karma, u.role, u.created_at,
             (SELECT COUNT(*) FROM pulses WHERE creator_id = $1) as total_pulses,
             (SELECT COUNT(*) FROM gratitude_notes gn 
              JOIN pulses p ON gn.pulse_id = p.id 
@@ -48,7 +48,7 @@ export const updateProfile = async (req, res) => {
       `UPDATE users 
        SET name = $1, bio = $2, updated_at = NOW() 
        WHERE id = $3 
-       RETURNING id, username, email, name, bio, karma, role`,
+      RETURNING id, username, email, name, bio, karma, role, created_at`,
       [name ?? null, bio ?? null, id],
     );
 
