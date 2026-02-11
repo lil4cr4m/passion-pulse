@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  // Default backend port is 5000; can override via VITE_API_URL
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  // Default backend port is 5001; can override via VITE_API_URL
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5001/api",
 });
 
 // Automatically add the Access Token to every request

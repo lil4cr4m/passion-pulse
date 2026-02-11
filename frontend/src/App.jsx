@@ -21,11 +21,11 @@ import CreatePulse from "./pages/CreatePulse";
 function App() {
   return (
     <AuthProvider>
+      {" "}
+      {/* 1. Provider starts here */}
       <Router>
-        <div className="min-h-screen bg-slate-50 text-slate-900">
-          {/* Navbar stays at the top across all routes */}
-          <Navbar />
-
+        <div className="min-h-screen bg-slate-50">
+          <Navbar /> {/* 2. Navbar is now INSIDE and can see the Auth state */}
           <main className="container mx-auto">
             <Routes>
               {/* PUBLIC ROUTES */}

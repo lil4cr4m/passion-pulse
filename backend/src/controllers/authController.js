@@ -1,20 +1,27 @@
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { query } from "../config/db.js";
 
+// Prefer dedicated refresh secret; fall back to JWT_SECRET if not provided so login doesn't crash
+const ACCESS_SECRET = process.env.JWT_SECRET;
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
 /**
  * TOKEN GENERATOR
  * Returns a 15-minute access token and a 7-day refresh token.
  */
 const generateTokens = (user) => {
+  if (!ACCESS_SECRET || !REFRESH_SECRET) {
+    throw new Error("JWT secrets are missing in environment variables");
+  }
+
   const accessToken = jwt.sign(
     { id: user.id, role: user.role },
-    process.env.JWT_SECRET,
+    ACCESS_SECRET,
     { expiresIn: "15m" }, // Short-lived for security
   );
   const refreshToken = jwt.sign(
     { id: user.id },
-    process.env.JWT_REFRESH_SECRET,
+    REFRESH_SECRET,
     { expiresIn: "7d" }, // Long-lived for persistence
   );
   return { accessToken, refreshToken };
@@ -49,6 +56,12 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
+    if (!ACCESS_SECRET || !REFRESH_SECRET) {
+      return res.status(500).json({
+        error: "Server auth secrets missing. Please set JWT_SECRET and JWT_REFRESH_SECRET",
+      });
+    }
+
     const userRes = await query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
@@ -73,6 +86,7 @@ export const login = async (req, res) => {
       user: { id: user.id, username: user.username, role: user.role },
     });
   } catch (err) {
+    console.error("🔥 LOGIN CRASH ERROR:", err);
     res.status(500).json({ error: "Login server error" });
   }
 };
@@ -94,7 +108,7 @@ export const refreshToken = async (req, res) => {
     if (tokenInDb.rows.length === 0)
       return res.status(403).json({ error: "Token revoked" });
 
-    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    const decoded = jwt.verify(token, REFRESH_SECRET);
     const user = await query("SELECT id, role FROM users WHERE id = $1", [
       decoded.id,
     ]);
@@ -102,6 +116,7 @@ export const refreshToken = async (req, res) => {
     const newTokens = generateTokens(user.rows[0]);
     res.json({ accessToken: newTokens.accessToken });
   } catch (err) {
+    console.error("🔥 REFRESH TOKEN ERROR:", err);
     res.status(403).json({ error: "Invalid refresh token" });
   }
 };
@@ -116,6 +131,7 @@ export const logout = async (req, res) => {
     await query("DELETE FROM refresh_tokens WHERE token = $1", [token]);
     res.json({ message: "Logged out successfully" });
   } catch (err) {
+    console.error("🔥 LOGOUT ERROR:", err);
     res.status(500).json({ error: "Logout failed" });
   }
 };

@@ -16,17 +16,29 @@ import { query } from "./config/db.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // ==========================================
 // MIDDLEWARE
 // ==========================================
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : [];
+
 app.use(
   cors({
-    origin: "http://localhost:5173", // or '*' to allow everything during testing
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        return callback(new Error("CORS policy violation"), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   }),
-); // Allow Frontend to talk to Backend
+);
+
 app.use(express.json()); // Parse incoming JSON requests
 
 // ==========================================
