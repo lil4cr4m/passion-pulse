@@ -30,13 +30,13 @@ const PulseCard = ({ pulse, onUpdate, onDelete }) => {
     user?.id === pulse.creator_id || (user && user.role === "admin");
 
   const handleDelete = async () => {
-    if (!window.confirm("Terminate this pulse?")) return;
+    if (!window.confirm("End this cast?")) return;
     setDeleting(true);
     try {
-      await api.delete(`/pulses/${pulse.id}`);
+      await api.delete(`/casts/${pulse.id}`);
       onDelete?.(pulse.id);
     } catch (err) {
-      alert("Unable to delete pulse right now.");
+      alert("Unable to delete cast right now.");
     } finally {
       setDeleting(false);
     }
@@ -46,7 +46,7 @@ const PulseCard = ({ pulse, onUpdate, onDelete }) => {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await api.put(`/pulses/${pulse.id}`, formData);
+      const res = await api.put(`/casts/${pulse.id}`, formData);
       onUpdate?.(res.data);
       setEditMode(false);
     } catch (err) {
@@ -58,13 +58,13 @@ const PulseCard = ({ pulse, onUpdate, onDelete }) => {
 
   return (
     <div className="bg-white border-[0.1875rem] border-ink p-[1.75rem] md:p-[2.25rem] rounded-[1.5rem] shadow-brutal-lg transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal group h-full flex flex-col">
-      {/* HEADER: Category and Karma */}
+      {/* HEADER: Channel and Credit */}
       <div className="flex justify-between items-start gap-[1.25rem] mb-[1.25rem]">
         <span className="bg-cyan border-[0.1875rem] border-ink px-[0.5rem] py-[0.25rem] rounded text-[0.625rem] font-black uppercase tracking-widest leading-none">
-          {pulse.vibe_category || "General"}
+          {pulse.channel || "General"}
         </span>
         <div className="text-[0.875rem] md:text-[1rem] font-black italic underline decoration-yellow decoration-[0.125rem] md:decoration-[0.25rem] underline-offset-2 tracking-tighter leading-tight shrink-0">
-          {pulse.karma ?? 0} KP
+          {pulse.credit ?? 0} CR
         </div>
       </div>
 
@@ -87,7 +87,7 @@ const PulseCard = ({ pulse, onUpdate, onDelete }) => {
               @{pulse.username || "anonymous"}
             </div>
             <div className="text-ink/50 text-[0.625rem] uppercase tracking-tighter leading-none">
-              {pulse.interest_name || "Member"}
+              {pulse.skill_name || "Skillcaster"}
             </div>
           </div>
         </div>
@@ -132,7 +132,7 @@ const PulseCard = ({ pulse, onUpdate, onDelete }) => {
       {showGratitude && (
         <div className="mt-[1rem] p-[1rem] border-[0.1875rem] border-ink rounded-xl bg-pink/10 animate-in slide-in-from-top-2 duration-300">
           <GratitudeForm
-            pulseId={pulse.id}
+            castId={pulse.id}
             onNoteSent={() => setTimeout(() => setShowGratitude(false), 2000)}
           />
         </div>
@@ -150,7 +150,7 @@ const PulseCard = ({ pulse, onUpdate, onDelete }) => {
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
                 }
-                placeholder="Pulse title"
+                placeholder="Cast title"
                 required
               />
               <textarea

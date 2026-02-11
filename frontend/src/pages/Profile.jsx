@@ -3,16 +3,29 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "../components/ui/Button";
-import { User, Award, Activity, Heart, Globe, Edit3 } from "lucide-react";
+import {
+  User,
+  Award,
+  Activity,
+  Heart,
+  Edit3,
+  PencilLine,
+  Trash2,
+} from "lucide-react";
 
 const Profile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   const [profile, setProfile] = useState(null);
+  const [sentNotes, setSentNotes] = useState([]);
+  const [receivedNotes, setReceivedNotes] = useState([]);
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [editingContent, setEditingContent] = useState("");
 
   // Check if this is the logged-in user's own profile
   const isOwnProfile = currentUser?.id?.toString() === id?.toString();
+  const canManageReceived = isOwnProfile || currentUser?.role === "admin";
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -25,6 +38,32 @@ const Profile = () => {
     };
     fetchProfile();
   }, [id]);
+
+  useEffect(() => {
+    const fetchSent = async () => {
+      if (!isOwnProfile) return;
+      try {
+        const res = await api.get("/notes/sent");
+        setSentNotes(res.data);
+      } catch (err) {
+        setSentNotes([]);
+      }
+    };
+    fetchSent();
+  }, [isOwnProfile]);
+
+  useEffect(() => {
+    const fetchReceived = async () => {
+      if (!canManageReceived) return;
+      try {
+        const res = await api.get(`/notes/user/${id}`);
+        setReceivedNotes(res.data);
+      } catch (err) {
+        setReceivedNotes([]);
+      }
+    };
+    fetchReceived();
+  }, [id, canManageReceived]);
 
   const joinDate = profile?.created_at
     ? new Date(profile.created_at).toLocaleDateString("en-GB", {
@@ -68,7 +107,7 @@ const Profile = () => {
           </p>
 
           <div className="pt-4 max-w-2xl mx-auto md:mx-0 space-y-2">
-            <h2 className="text-[10px] font-black uppercase text-ink/40 tracking-[0.2em] mb-1">
+            <h2 className="text-[10px] font-black uppercase text-ink/80 tracking-[0.2em] mb-1">
               Neural_Bio
             </h2>
             <p className="font-bold text-lg leading-tight text-pretty break-words">
@@ -96,20 +135,20 @@ const Profile = () => {
         <div className="bg-yellow border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center gap-3">
           <Award size={32} />
           <div className="text-5xl font-black tabular-nums leading-tight text-center">
-            {profile.karma}
+            {profile.credit}
           </div>
           <div className="font-black text-[10px] uppercase tracking-widest italic opacity-60 text-center">
-            Karma_Points
+            Credit
           </div>
         </div>
 
         <div className="bg-violet border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center text-white gap-3">
           <Activity size={32} />
           <div className="text-5xl font-black tabular-nums leading-tight text-center">
-            {profile.total_pulses}
+            {profile.total_casts}
           </div>
           <div className="font-black text-[10px] uppercase tracking-widest italic opacity-70 text-center">
-            Pulses_Hosted
+            Casts_Hosted
           </div>
         </div>
 
@@ -127,11 +166,178 @@ const Profile = () => {
           <div className="font-black uppercase text-xs tracking-widest text-center">
             {profile.role || "Member"}
           </div>
-          <div className="text-sm font-bold uppercase text-ink/70 text-center leading-tight">
+          <div className="text-sm font-bold uppercase text-ink text-center leading-tight">
             Since {joinDate}
           </div>
         </div>
       </div>
+
+      {isOwnProfile && (
+        <div className="bg-white border-3 border-ink p-6 rounded-[2rem] shadow-brutal-lg space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-2xl font-black uppercase tracking-tight">
+              Notes Sent
+            </h3>
+          </div>
+          {sentNotes.length === 0 ? (
+            <p className="text-ink/60 font-bold">No notes sent yet.</p>
+          ) : (
+            <div className="space-y-4">
+              {sentNotes.map((note) => (
+                <div
+                  key={note.id}
+                  className="border-3 border-ink rounded-2xl p-4 bg-offwhite flex flex-col gap-3"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-black text-ink">{note.cast_title}</p>
+                      <p className="text-xs text-ink/60 uppercase tracking-wide">
+                        {new Date(note.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="violet"
+                        className="px-3 py-2 text-xs"
+                        onClick={() => {
+                          setEditingNoteId(note.id);
+                          setEditingContent(note.content);
+                        }}
+                      >
+                        <PencilLine size={14} /> Edit
+                      </Button>
+                      <Button
+                        variant="cyan"
+                        className="px-3 py-2 text-xs"
+                        onClick={async () => {
+                          try {
+                            await api.delete(`/notes/${note.id}`);
+                            setSentNotes((prev) =>
+                              prev.filter((n) => n.id !== note.id),
+                            );
+                          } catch (err) {
+                            alert("Failed to delete note");
+                          }
+                        }}
+                      >
+                        <Trash2 size={14} /> Delete
+                      </Button>
+                    </div>
+                  </div>
+
+                  {editingNoteId === note.id ? (
+                    <form
+                      onSubmit={async (e) => {
+                        e.preventDefault();
+                        try {
+                          const res = await api.put(`/notes/${note.id}`, {
+                            content: editingContent,
+                          });
+                          setSentNotes((prev) =>
+                            prev.map((n) =>
+                              n.id === note.id
+                                ? { ...n, content: res.data.content }
+                                : n,
+                            ),
+                          );
+                          setEditingNoteId(null);
+                          setEditingContent("");
+                        } catch (err) {
+                          alert("Update failed");
+                        }
+                      }}
+                      className="space-y-3"
+                    >
+                      <textarea
+                        className="input-brutal h-24"
+                        value={editingContent}
+                        onChange={(e) => setEditingContent(e.target.value)}
+                        required
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          variant="violet"
+                          type="submit"
+                          className="flex-1"
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          variant="outline"
+                          type="button"
+                          className="flex-1"
+                          onClick={() => {
+                            setEditingNoteId(null);
+                            setEditingContent("");
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </form>
+                  ) : (
+                    <p className="text-ink font-bold leading-tight">
+                      {note.content}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {canManageReceived && (
+        <div className="bg-white border-3 border-ink p-6 rounded-[2rem] shadow-brutal-lg space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-2xl font-black uppercase tracking-tight">
+              Notes Received
+            </h3>
+          </div>
+          {receivedNotes.length === 0 ? (
+            <p className="text-ink/60 font-bold">No notes received yet.</p>
+          ) : (
+            <div className="space-y-4">
+              {receivedNotes.map((note) => (
+                <div
+                  key={note.id}
+                  className="border-3 border-ink rounded-2xl p-4 bg-offwhite flex flex-col gap-3"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-black text-ink">{note.cast_title}</p>
+                      <p className="text-xs text-ink/60 uppercase tracking-wide">
+                        {new Date(note.created_at).toLocaleString()}
+                      </p>
+                      <p className="text-sm text-ink font-bold leading-tight mt-2 break-words">
+                        {note.content}
+                      </p>
+                    </div>
+                    <Button
+                      variant="cyan"
+                      className="px-3 py-2 text-xs"
+                      onClick={async () => {
+                        if (!window.confirm("Delete this received note?"))
+                          return;
+                        try {
+                          await api.delete(`/notes/${note.id}`);
+                          setReceivedNotes((prev) =>
+                            prev.filter((n) => n.id !== note.id),
+                          );
+                        } catch (err) {
+                          alert("Failed to delete note");
+                        }
+                      }}
+                    >
+                      <Trash2 size={14} /> Delete
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

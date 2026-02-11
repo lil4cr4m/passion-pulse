@@ -86,7 +86,12 @@ export const login = async (req, res) => {
     res.json({
       accessToken,
       refreshToken,
-      user: { id: user.id, username: user.username, role: user.role },
+      user: {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        credit: user.credit,
+      },
     });
   } catch (err) {
     logError("authController.login", err, { email });

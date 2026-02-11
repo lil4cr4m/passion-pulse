@@ -29,9 +29,9 @@ export const Navbar = () => {
       <div className="max-w-[1400px] mx-auto flex justify-between items-center">
         <Link
           to="/"
-          className="text-3xl font-black italic tracking-tighter hover:scale-105 transition-transform"
+          className="text-4xl font-black italic tracking-tighter text-black [text-shadow:3px_3px_0px_#A358FF]"
         >
-          PASSION<span className="text-violet">PULSE</span>
+          SKILL<span className="text-[#A358FF]">CAST</span>
         </Link>
 
         <div className="flex items-center gap-4 md:gap-8">
@@ -39,11 +39,11 @@ export const Navbar = () => {
             to="/"
             className={`font-black uppercase text-sm tracking-tight flex items-center gap-2 ${
               pathname === "/"
-                ? "text-violet underline decoration-4 underline-offset-4"
-                : "hover:text-violet"
+                ? "text-[#A358FF] underline decoration-4 underline-offset-4"
+                : "hover:text-[#A358FF]"
             }`}
           >
-            <HomeIcon size={16} /> Feed
+            <HomeIcon size={16} /> Casts
           </Link>
 
           {user ? (
@@ -53,11 +53,17 @@ export const Navbar = () => {
                 to={`/profile/${user.id}`}
                 className={`font-black uppercase text-sm tracking-tight hidden md:flex items-center gap-2 ${
                   pathname === `/profile/${user.id}`
-                    ? "text-pink underline decoration-4 underline-offset-4"
-                    : "hover:text-violet"
+                    ? "text-[#A358FF] underline decoration-4 underline-offset-4"
+                    : "hover:text-[#A358FF]"
                 }`}
               >
                 <UserIcon size={16} /> Profile
+              </Link>
+
+              <Link to="/create">
+                <button className="bg-[#00FF85] border-3 border-black px-4 py-2 font-black uppercase text-xs shadow-[4px_4px_0px_0px_black] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                  START_CASTING
+                </button>
               </Link>
 
               <Button

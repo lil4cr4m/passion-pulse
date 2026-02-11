@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Zap, Trophy, PlusCircle, Search, Activity } from "lucide-react";
+import { Search } from "lucide-react";
 
 // Project Imports - Standardized Paths
 import { useAuth } from "../context/AuthContext";
@@ -18,50 +18,50 @@ const Home = () => {
     /* Main Layout Container: Standardized Grid spacing */
     <div className="max-w-layout mx-auto p-4 md:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       {/* IDENTITY COL */}
-      <aside className="lg:col-span-3 lg:sticky lg:top-[6rem] space-y-6 order-2 lg:order-1">
-        <div className="bg-white border-3 border-ink p-[2rem] rounded-[1.5rem] shadow-brutal text-ink">
-          <h1 className="text-h1-m xl:text-h2-d font-black uppercase mb-[1rem] leading-tight tracking-tighter text-center lg:text-left">
-            Hey,
+      <aside
+        className="lg:col-span-3 lg:sticky lg:top-[6rem] space-y-6 order-2 lg:order-1"
+        aria-label="User actions and stats"
+      >
+        <div className="bg-white border-4 border-black p-[2rem] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-black">
+          <h1 className="text-4xl font-black uppercase mb-[1rem] leading-tight tracking-tighter">
+            USER//
             <br />
-            <span className="bg-pink px-[0.5rem] italic border-3 border-ink rounded-sm">
-              {user?.username || "Viber"}
+            <span className="bg-[#A358FF] text-white px-[0.5rem] italic border-2 border-black">
+              {user?.username || "Guest"}
             </span>
           </h1>
-          <p className="text-[0.75rem] font-bold uppercase tracking-widest opacity-60 leading-relaxed text-center lg:text-left">
-            Node_Active
+          <p className="text-[0.75rem] font-black uppercase tracking-[0.2em] text-[#00FF85]">
+            ● BROADCAST_READY
           </p>
         </div>
 
         <Link to="/create" className="block">
-          <Button
-            variant="neon"
-            className="w-full py-6 text-xl shadow-brutal-lg hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
-          >
-            <PlusCircle size={24} /> CREATE_SIGNAL
-          </Button>
+          <button className="w-full py-4 bg-[#FFD100] border-4 border-black font-black text-xl uppercase italic shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+            + NEW_CAST
+          </button>
         </Link>
 
-        <div className="bg-yellow border-3 border-ink p-[1.5rem] rounded-[1.5rem] shadow-brutal text-center lg:text-left space-y-[0.5rem]">
-          <p className="text-[0.75rem] font-black uppercase italic tracking-widest leading-tight">
-            Current Karma
+        <div className="bg-[#00E0FF] border-4 border-black p-[1.5rem] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-black">
+          <p className="text-[0.75rem] font-black uppercase italic tracking-widest">
+            EARNED_CREDIT
           </p>
-          <p className="text-[3rem] font-black tabular-nums leading-none">
-            {user?.karma_score || 0}
+          <p className="text-[4rem] font-black tabular-nums leading-none mt-2">
+            {user?.credit || 0}
           </p>
         </div>
       </aside>
 
       {/* FEED COL */}
-      <main className="lg:col-span-6 space-y-[2.5rem] order-1 lg:order-2">
+      <section className="lg:col-span-6 space-y-[2.5rem] order-1 lg:order-2">
         <section className="space-y-[1.5rem]">
           <div className="flex items-center justify-between mb-[0.5rem]">
             <h2 className="text-h2-m xl:text-h2-d font-black italic uppercase tracking-tighter leading-tight">
-              Live_Signals
+              Live_Casts
             </h2>
             <div className="flex gap-[0.5rem] items-center">
               <span className="w-3 h-3 rounded-full bg-green animate-pulse border-2 border-ink" />
               <span className="text-[0.6rem] xl:text-[0.625rem] font-black uppercase tracking-widest leading-none">
-                Real-time Feed
+                Casting Now
               </span>
             </div>
           </div>
@@ -84,10 +84,13 @@ const Home = () => {
             searchQuery={searchQuery.trim()}
           />
         </section>
-      </main>
+      </section>
 
       {/* LEADERBOARD COL */}
-      <aside className="lg:col-span-3 lg:sticky lg:top-[6rem] order-3">
+      <aside
+        className="lg:col-span-3 lg:sticky lg:top-[6rem] order-3"
+        aria-label="Top nodes leaderboard"
+      >
         <div className="bg-white border-3 border-ink rounded-[2rem] shadow-brutal-lg overflow-hidden">
           <div className="p-[1.5rem] border-b-3 border-ink bg-yellow text-ink">
             <h2 className="text-[1.25rem] font-black uppercase tracking-tighter leading-none">

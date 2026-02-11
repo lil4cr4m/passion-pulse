@@ -5,8 +5,8 @@ import { logError } from "./utils/logger.js";
 
 // Import Routes
 import authRoutes from "./routes/authRoutes.js";
-import pulseRoutes from "./routes/pulseRoutes.js";
-import interestRoutes from "./routes/interestRoutes.js";
+import castRoutes from "./routes/castRoutes.js";
+import skillRoutes from "./routes/skillRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 
@@ -54,8 +54,8 @@ app.get("/api/health", (req, res) => {
 // ==========================================
 app.use("/api/auth", authRoutes); // Registration, Login, Refresh
 app.use("/api/users", userRoutes); // Profiles & Leaderboards
-app.use("/api/pulses", pulseRoutes); // Live Now signals
-app.use("/api/interests", interestRoutes); // Vibe Catalog
+app.use("/api/casts", castRoutes); // Live Casts
+app.use("/api/skills", skillRoutes); // Skill Catalog
 app.use("/api/notes", noteRoutes); // Gratitude & Karma
 
 // ==========================================

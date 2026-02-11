@@ -59,6 +59,10 @@ Modern community platform for live “pulses” (events/rooms), gratitude notes,
 - Notes: create and read; self-thank prevention enforced server-side.
 - Users: create (register), read (profile), update (profile/password).
 
+## Admin Seed (for demos)
+
+- Default admin: email `admin@pulse.com`, password `password` (from seed hash). Role: admin.
+
 ## How to Use CRUD in the UI
 
 - Create: Use “Create Signal” (Home sidebar) to launch a pulse with title, description, category, and meeting link.

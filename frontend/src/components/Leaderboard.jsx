@@ -33,8 +33,8 @@ const Leaderboard = () => {
             <span className="font-black uppercase text-[0.95rem] xl:text-[1rem] leading-none tracking-tighter truncate">
               {leader.username}
             </span>
-            <span className="text-[0.6rem] xl:text-[0.625rem] font-black uppercase tracking-widest text-ink/40 mt-[0.25rem] leading-tight">
-              Level_{Math.floor(leader.karma / 100) + 1}
+            <span className="text-[0.6rem] xl:text-[0.625rem] font-black uppercase tracking-widest text-ink/80 mt-[0.25rem] leading-tight">
+              Level_{Math.floor(leader.credit / 100) + 1}
             </span>
           </div>
         </Link>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import api from "../api/axios";
 import { Heart, Send } from "lucide-react";
 
-const GratitudeForm = ({ pulseId, onNoteSent }) => {
+const GratitudeForm = ({ castId, onNoteSent }) => {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
@@ -13,7 +13,7 @@ const GratitudeForm = ({ pulseId, onNoteSent }) => {
     try {
       // Posts data to the notesController
       const res = await api.post("/notes", {
-        pulse_id: pulseId,
+        cast_id: castId,
         content: content,
       });
 
@@ -34,7 +34,7 @@ const GratitudeForm = ({ pulseId, onNoteSent }) => {
         <Heart size={18} className="text-pink" fill="#FF32F1" /> SEND_GRATITUDE
       </h4>
       <p className="text-xs text-ink/70 mb-4 font-bold uppercase tracking-wide">
-        Leaving a note awards the host +10 Karma!
+        Leaving a note awards the host +10 Credit!
       </p>
 
       {message ? (

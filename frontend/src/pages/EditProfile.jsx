@@ -132,7 +132,7 @@ const EditProfile = () => {
             </label>
             <textarea
               className="input-brutal h-32 resize-none"
-              placeholder="Broadcast your vibe..."
+              placeholder="Broadcast your skills..."
               value={formData.bio}
               onChange={(e) =>
                 setFormData({ ...formData, bio: e.target.value })

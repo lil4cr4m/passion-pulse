@@ -6,37 +6,37 @@ import { Zap, Link as LinkIcon, Info, Layers } from "lucide-react";
 
 const CreatePulse = () => {
   // DB States
-  const [interests, setInterests] = useState([]);
+  const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    interest_id: "",
+    skill_id: "",
     meeting_link: "",
   });
 
   const navigate = useNavigate();
 
-  // 1. DATA SYNC: Fetch the vibe catalog from interestController
+  // 1. DATA SYNC: Fetch the skill catalog from skillController
   useEffect(() => {
-    const fetchInterests = async () => {
+    const fetchSkills = async () => {
       try {
-        const res = await api.get("/interests");
-        setInterests(res.data);
+        const res = await api.get("/skills");
+        setSkills(res.data);
       } catch (err) {
-        setInterests([]);
+        setSkills([]);
       } finally {
         setLoading(false);
       }
     };
-    fetchInterests();
+    fetchSkills();
   }, []);
 
-  // 2. BROADCAST LOGIC: Posts to pulseController.js
+  // 2. BROADCAST LOGIC: Posts to castController.js
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/pulses", formData);
+      await api.post("/casts", formData);
       navigate("/"); // Redirect back to feed on success
     } catch (err) {
       alert("BROADCAST_FAILURE: Ensure all fields are valid.");
@@ -49,31 +49,31 @@ const CreatePulse = () => {
       <div className="bg-white border-3 border-ink p-8 md:p-12 rounded-[2.5rem] shadow-brutal-lg">
         <header className="mb-10 text-center md:text-left">
           <h1 className="text-5xl mb-2 italic">
-            Init <span className="text-pink">Signal</span>
+            Start a <span className="text-pink">Cast</span>
           </h1>
           <p className="font-black text-ink/50 uppercase text-xs tracking-widest">
-            Establish a New Pulse on the Network
+            Launch a new SkillCast
           </p>
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* CATEGORY SELECT: Linked to DB Interests */}
+          {/* CHANNEL SELECT: Linked to DB Skills */}
           <div>
             <label className="flex items-center gap-2 mb-2 font-black uppercase text-xs italic">
-              <Layers size={14} /> Vibe Category
+              <Layers size={14} /> Channel
             </label>
             <select
               required
               className="input-brutal appearance-none cursor-pointer"
-              value={formData.interest_id}
+              value={formData.skill_id}
               onChange={(e) =>
-                setFormData({ ...formData, interest_id: e.target.value })
+                setFormData({ ...formData, skill_id: e.target.value })
               }
             >
-              <option value="">SELECT_VIBE_TYPE...</option>
-              {interests.map((i) => (
+              <option value="">SELECT_CHANNEL...</option>
+              {skills.map((i) => (
                 <option key={i.id} value={i.id}>
-                  {i.vibe_category?.toUpperCase()}: {i.name}
+                  {i.channel?.toUpperCase()}: {i.name}
                 </option>
               ))}
             </select>
@@ -82,7 +82,7 @@ const CreatePulse = () => {
           {/* TITLE INPUT */}
           <div>
             <label className="flex items-center gap-2 mb-2 font-black uppercase text-xs italic">
-              <Zap size={14} /> Pulse Title
+              <Zap size={14} /> Cast Title
             </label>
             <input
               type="text"
@@ -98,7 +98,7 @@ const CreatePulse = () => {
           {/* MEETING LINK: Essential for the 'Join' logic */}
           <div>
             <label className="flex items-center gap-2 mb-2 font-black uppercase text-xs italic">
-              <LinkIcon size={14} /> Meeting Link (Zoom/Jitsi/Meet)
+              <LinkIcon size={14} /> Cast Link (Zoom/Jitsi/Meet)
             </label>
             <input
               type="url"
@@ -114,7 +114,7 @@ const CreatePulse = () => {
           {/* DESCRIPTION TEXTAREA */}
           <div>
             <label className="flex items-center gap-2 mb-2 font-black uppercase text-xs italic">
-              <Info size={14} /> Signal Data (Description)
+              <Info size={14} /> Cast Details (Description)
             </label>
             <textarea
               className="input-brutal h-32 resize-none"

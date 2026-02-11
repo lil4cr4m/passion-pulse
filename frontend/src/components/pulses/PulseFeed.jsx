@@ -3,7 +3,7 @@ import api from "../../api/axios"; // Your DB-linked axios instance
 import PulseCard from "./PulseCard";
 
 const PulseFeed = ({ selectedCategory, searchQuery }) => {
-  const [pulses, setPulses] = useState([]);
+  const [casts, setCasts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -11,33 +11,33 @@ const PulseFeed = ({ selectedCategory, searchQuery }) => {
      * fetchPulses: Pulls data from the backend.
      * Uses the selectedCategory prop to filter the database query.
      */
-    const fetchPulses = async () => {
+    const fetchCasts = async () => {
       setLoading(true);
       try {
         const params = {};
         if (selectedCategory) params.category = selectedCategory;
         if (searchQuery) params.q = searchQuery;
 
-        const res = await api.get("/pulses", { params });
-        setPulses(res.data);
+        const res = await api.get("/casts", { params });
+        setCasts(res.data);
       } catch (err) {
-        setPulses([]);
+        setCasts([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPulses();
+    fetchCasts();
   }, [selectedCategory, searchQuery]); // Refetch when category filter or search changes
 
-  const handlePulseUpdate = (updatedPulse) => {
-    setPulses((prev) =>
-      prev.map((p) => (p.id === updatedPulse.id ? updatedPulse : p)),
+  const handleCastUpdate = (updatedCast) => {
+    setCasts((prev) =>
+      prev.map((c) => (c.id === updatedCast.id ? updatedCast : c)),
     );
   };
 
-  const handlePulseDelete = (pulseId) => {
-    setPulses((prev) => prev.filter((p) => p.id !== pulseId));
+  const handleCastDelete = (castId) => {
+    setCasts((prev) => prev.filter((c) => c.id !== castId));
   };
 
   // LOADING STATE: Consistent with the app's font style
@@ -50,14 +50,14 @@ const PulseFeed = ({ selectedCategory, searchQuery }) => {
   }
 
   // EMPTY STATE: Standardized Brutalist box
-  if (!pulses.length) {
+  if (!casts.length) {
     return (
       <div className="bg-white border-3 border-ink border-dashed rounded-3xl p-12 text-center shadow-brutal">
-        <p className="font-black text-ink/40 uppercase tracking-widest mb-4">
-          No Active Signals
+        <p className="font-black text-ink/80 uppercase tracking-widest mb-4">
+          No Live Casts
         </p>
         <p className="text-ink font-bold italic underline decoration-violet decoration-4">
-          Be the first to go live!
+          Be the first to cast!
         </p>
       </div>
     );
@@ -66,12 +66,12 @@ const PulseFeed = ({ selectedCategory, searchQuery }) => {
   // RENDER GRID: Uses gap-8 to maintain the Bento Grid spacing
   return (
     <div className="grid grid-cols-1 gap-8">
-      {pulses.map((pulse) => (
+      {casts.map((cast) => (
         <PulseCard
-          key={pulse.id}
-          pulse={pulse}
-          onUpdate={handlePulseUpdate}
-          onDelete={handlePulseDelete}
+          key={cast.id}
+          pulse={cast}
+          onUpdate={handleCastUpdate}
+          onDelete={handleCastDelete}
         />
       ))}
     </div>

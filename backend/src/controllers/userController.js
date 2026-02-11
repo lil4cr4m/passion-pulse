@@ -3,7 +3,7 @@ import { logError } from "../utils/logger.js";
 
 /**
  * GET USER PROFILE & STATS
- * Aggregates Karma and activity counts for the Profile dashboard.
+ * Aggregates Credit and activity counts for the Profile dashboard.
  */
 export const getProfile = async (req, res) => {
   const { id } = req.params;
@@ -11,11 +11,11 @@ export const getProfile = async (req, res) => {
     const userStats = await query(
       `
         SELECT 
-          u.id, u.username, u.name, u.bio, u.karma, u.role, u.created_at,
-            (SELECT COUNT(*) FROM pulses WHERE creator_id = $1) as total_pulses,
+          u.id, u.username, u.name, u.bio, u.credit, u.role, u.created_at,
+            (SELECT COUNT(*) FROM casts WHERE creator_id = $1) as total_casts,
             (SELECT COUNT(*) FROM gratitude_notes gn 
-             JOIN pulses p ON gn.pulse_id = p.id 
-             WHERE p.creator_id = $1) as notes_received
+             JOIN casts c ON gn.cast_id = c.id 
+             WHERE c.creator_id = $1) as notes_received
         FROM users u
         WHERE u.id = $1`,
       [id],
@@ -51,7 +51,7 @@ export const updateProfile = async (req, res) => {
       `UPDATE users 
        SET name = $1, bio = $2, updated_at = NOW() 
        WHERE id = $3 
-      RETURNING id, username, email, name, bio, karma, role, created_at`,
+      RETURNING id, username, email, name, bio, credit, role, created_at`,
       [name ?? null, bio ?? null, id],
     );
 
@@ -68,12 +68,12 @@ export const updateProfile = async (req, res) => {
 
 /**
  * GET LEADERBOARD
- * Fetches the top 10 users based on Karma.
+ * Fetches the top 10 users based on Credit.
  */
 export const getLeaderboard = async (req, res) => {
   try {
     const leaders = await query(
-      "SELECT id, username, karma FROM users ORDER BY karma DESC LIMIT 10",
+      "SELECT id, username, credit FROM users ORDER BY credit DESC LIMIT 10",
     );
     res.json(leaders.rows);
   } catch (err) {
