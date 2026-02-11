@@ -46,6 +46,16 @@ function App() {
                 }
               />
 
+              {/* ADMIN ROUTES: Only accessible if admin */}
+              <Route
+                path="/admin/users"
+                element={
+                  <Protected>
+                    <AdminUsers />
+                  </Protected>
+                }
+              />
+
               {/* 404 FALLBACK */}
               <Route
                 path="*"

@@ -124,7 +124,9 @@ export const deleteUser = async (req, res) => {
     }
 
     // Perform deletion (cascade handles related records)
-    const result = await query("DELETE FROM users WHERE id = $1 RETURNING id", [id]);
+    const result = await query("DELETE FROM users WHERE id = $1 RETURNING id", [
+      id,
+    ]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
@@ -134,5 +136,45 @@ export const deleteUser = async (req, res) => {
   } catch (err) {
     logError("userController.deleteUser", err, { id });
     res.status(500).json({ error: "Failed to delete user" });
+  }
+};
+
+/**
+ * UPDATE USER (ADMIN ONLY)
+ * Allows admin to update name, credit, and role for any user.
+ */
+export const updateUser = async (req, res) => {
+  // Admin-only check
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ error: "Forbidden - Admin only" });
+  }
+
+  const { id } = req.params;
+  const { name, credit, role } = req.body;
+
+  try {
+    // Prevent role downgrade of self
+    if (req.user.id?.toString() === id?.toString() && role === "member") {
+      return res
+        .status(400)
+        .json({ error: "Cannot downgrade your own admin role" });
+    }
+
+    const result = await query(
+      `UPDATE users 
+       SET name = COALESCE($1, name), credit = COALESCE($2, credit), role = COALESCE($3, role), updated_at = NOW() 
+       WHERE id = $4 
+      RETURNING id, username, email, name, bio, credit, role, created_at, updated_at`,
+      [name ?? null, credit ?? null, role ?? null, id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    logError("userController.updateUser", err, { id });
+    res.status(500).json({ error: "Failed to update user" });
   }
 };

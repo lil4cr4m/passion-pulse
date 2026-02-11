@@ -5,6 +5,7 @@ import {
   getLeaderboard,
   getAllUsers,
   deleteUser,
+  updateUser,
 } from "../controllers/userController.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 
@@ -29,6 +30,9 @@ router.put("/profile/:id", authenticateToken, updateProfile);
  */
 // Get all users (admin only)
 router.get("/admin/all", authenticateToken, getAllUsers);
+
+// Update a user (admin only) - for editing role, credit, name
+router.put("/admin/:id", authenticateToken, updateUser);
 
 // Delete a user (admin only)
 router.delete("/:id", authenticateToken, deleteUser);

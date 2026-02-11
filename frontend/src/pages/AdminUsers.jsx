@@ -64,10 +64,14 @@ export default function AdminUsers() {
     <div className="min-h-screen bg-offwhite p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-12 border-b-4 border-ink pb-6">
+        <div className="flex justify-between items-center mb-12 border-b-4 pb-6">
           <div>
-            <h1 className="text-4xl font-black text-ink mb-2">ADMIN// USER MANAGEMENT</h1>
-            <p className="text-sm font-mono text-ink">{users.length} users in database</p>
+            <h1 className="text-4xl font-black text-ink mb-2">
+              ADMIN// USER MANAGEMENT
+            </h1>
+            <p className="text-sm font-mono text-ink">
+              {users.length} users in database
+            </p>
           </div>
           <Button
             variant="neon"
@@ -99,7 +103,10 @@ export default function AdminUsers() {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="border-b-2 border-ink hover:bg-neon/10 transition">
+                <tr
+                  key={u.id}
+                  className="border-b-2 border-ink hover:bg-neon/10 transition"
+                >
                   <td className="p-4">
                     <span className="font-bold text-ink">{u.username}</span>
                   </td>
@@ -116,7 +123,9 @@ export default function AdminUsers() {
                     </span>
                   </td>
                   <td className="p-4">
-                    <span className={`font-bold ${u.credit >= 100 ? "text-yellow" : "text-ink"}`}>
+                    <span
+                      className={`font-bold ${u.credit >= 100 ? "text-yellow" : "text-ink"}`}
+                    >
                       {u.credit}
                     </span>
                   </td>
@@ -150,9 +159,12 @@ export default function AdminUsers() {
         {deletingUserId && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <div className="bg-offwhite border-4 border-ink p-8 shadow-[16px_16px_0_0_#000000] max-w-md">
-              <h2 className="text-2xl font-black text-ink mb-4">CONFIRM DELETION</h2>
+              <h2 className="text-2xl font-black text-ink mb-4">
+                CONFIRM DELETION
+              </h2>
               <p className="text-ink mb-6">
-                Are you sure you want to delete this user? This action cannot be undone.
+                Are you sure you want to delete this user? This action cannot be
+                undone.
               </p>
               <div className="flex gap-4">
                 <Button
@@ -180,7 +192,9 @@ export default function AdminUsers() {
             user={editingUser}
             onClose={() => setEditingUser(null)}
             onSave={(updatedUser) => {
-              setUsers(users.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
+              setUsers(
+                users.map((u) => (u.id === updatedUser.id ? updatedUser : u)),
+              );
               setEditingUser(null);
             }}
           />
@@ -226,9 +240,10 @@ function EditUserModal({ user, onClose, onSave }) {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await axios.put(`/users/profile/${user.id}`, {
+      const response = await axios.put(`/users/admin/${user.id}`, {
         name: formData.name,
-        bio: formData.bio,
+        credit: formData.credit,
+        role: formData.role,
       });
       onSave(response.data);
     } catch (err) {
@@ -250,48 +265,56 @@ function EditUserModal({ user, onClose, onSave }) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-bold text-ink mb-2">NAME</label>
+            <label className="block text-sm font-bold text-ink mb-3">
+              NAME
+            </label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-2 border-2 border-ink font-mono"
+              className="w-full px-4 py-3 border-2 border-ink font-mono"
               placeholder="Full name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-ink mb-2">EMAIL (Read Only)</label>
+            <label className="block text-sm font-bold text-ink mb-3">
+              EMAIL (Read Only)
+            </label>
             <input
               type="email"
               value={formData.email}
               disabled
-              className="w-full px-4 py-2 border-2 border-ink font-mono bg-gray-100"
+              className="w-full px-4 py-3 border-2 border-ink font-mono bg-gray-100"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-ink mb-2">CREDIT</label>
+            <label className="block text-sm font-bold text-ink mb-3">
+              CREDIT
+            </label>
             <input
               type="number"
               name="credit"
               value={formData.credit}
               onChange={handleChange}
-              className="w-full px-4 py-2 border-2 border-ink font-mono"
+              className="w-full px-4 py-3 border-2 border-ink font-mono"
               placeholder="Credit amount"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-ink mb-2">ROLE</label>
+            <label className="block text-sm font-bold text-ink mb-3">
+              ROLE
+            </label>
             <select
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full px-4 py-2 border-2 border-ink font-mono font-bold"
+              className="w-full px-4 py-3 border-2 border-ink font-mono font-bold"
             >
               <option value="member">MEMBER</option>
               <option value="admin">ADMIN</option>
@@ -369,65 +392,75 @@ function CreateUserModal({ onClose, onCreateUser }) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-bold text-ink mb-2">USERNAME</label>
+            <label className="block text-sm font-bold text-ink mb-3">
+              USERNAME
+            </label>
             <input
               type="text"
               name="username"
               value={formData.username}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border-2 border-ink font-mono"
+              className="w-full px-4 py-3 border-2 border-ink font-mono"
               placeholder="username"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-ink mb-2">EMAIL</label>
+            <label className="block text-sm font-bold text-ink mb-3">
+              EMAIL
+            </label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border-2 border-ink font-mono"
+              className="w-full px-4 py-3 border-2 border-ink font-mono"
               placeholder="email@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-ink mb-2">PASSWORD</label>
+            <label className="block text-sm font-bold text-ink mb-3">
+              PASSWORD
+            </label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border-2 border-ink font-mono"
+              className="w-full px-4 py-3 border-2 border-ink font-mono"
               placeholder="••••••••"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-ink mb-2">NAME (Optional)</label>
+            <label className="block text-sm font-bold text-ink mb-3">
+              NAME (Optional)
+            </label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-2 border-2 border-ink font-mono"
+              className="w-full px-4 py-3 border-2 border-ink font-mono"
               placeholder="Full name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-ink mb-2">ROLE</label>
+            <label className="block text-sm font-bold text-ink mb-3">
+              ROLE
+            </label>
             <select
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full px-4 py-2 border-2 border-ink font-mono font-bold"
+              className="w-full px-4 py-3 border-2 border-ink font-mono font-bold"
             >
               <option value="member">MEMBER</option>
               <option value="admin">ADMIN</option>

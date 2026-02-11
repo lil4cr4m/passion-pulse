@@ -7,6 +7,7 @@ import {
   LogIn,
   User as UserIcon,
   Home as HomeIcon,
+  Settings as AdminIcon,
 } from "lucide-react";
 
 export const Navbar = () => {
@@ -18,7 +19,7 @@ export const Navbar = () => {
     try {
       await logout();
       navigate("/login");
-    } catch (err) {
+    } catch {
       navigate("/login");
     }
   };
@@ -58,6 +59,20 @@ export const Navbar = () => {
               >
                 <UserIcon size={16} /> Profile
               </Link>
+
+              {/* ADMIN USERS LINK: Only visible for admins */}
+              {user.role === "admin" && (
+                <Link
+                  to="/admin/users"
+                  className={`font-black uppercase text-sm tracking-tight flex items-center gap-2 ${
+                    pathname === "/admin/users"
+                      ? "text-violet underline decoration-4 underline-offset-4"
+                      : "hover:text-violet"
+                  }`}
+                >
+                  <AdminIcon size={16} /> Admin
+                </Link>
+              )}
 
               <Button
                 variant="cyan"
