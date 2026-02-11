@@ -138,3 +138,54 @@ export const logout = async (req, res) => {
     res.status(500).json({ error: "Logout failed" });
   }
 };
+
+export const changePassword = async (req, res) => {
+  const userId = req.user?.id;
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res
+      .status(400)
+      .json({ error: "Current and new password are required" });
+  }
+
+  if (newPassword.length < 8) {
+    return res
+      .status(400)
+      .json({ error: "New password must be at least 8 characters" });
+  }
+
+  try {
+    const userRes = await query(
+      "SELECT id, password_hash FROM users WHERE id = $1",
+      [userId],
+    );
+
+    if (userRes.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = userRes.rows[0];
+    const valid = await bcrypt.compare(currentPassword, user.password_hash);
+
+    if (!valid) {
+      return res.status(401).json({ error: "Current password is incorrect" });
+    }
+
+    const salt = await bcrypt.genSalt(12);
+    const hashed = await bcrypt.hash(newPassword, salt);
+
+    await query("UPDATE users SET password_hash = $1 WHERE id = $2", [
+      hashed,
+      userId,
+    ]);
+
+    // Invalidate existing refresh tokens so sessions are renewed
+    await query("DELETE FROM refresh_tokens WHERE user_id = $1", [userId]);
+
+    res.json({ message: "Password updated successfully" });
+  } catch (err) {
+    logError("authController.changePassword", err, { userId });
+    res.status(500).json({ error: "Failed to update password" });
+  }
+};
