@@ -2,10 +2,21 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
-import Button from "../components/ui/Button";
-import { LogIn, UserPlus, Mail, Lock, User as UserIcon } from "lucide-react";
+import { Button } from "../components/ui/Button";
+import {
+  LogIn,
+  UserPlus,
+  Mail,
+  Lock,
+  User as UserIcon,
+  Zap,
+  LogOut,
+  ShieldCheck,
+} from "lucide-react";
 
 const Login = () => {
+  // 1. AUTH STATE: Destructure 'user' to check if already logged in, and 'logout' function
+  const { user: activeUser, login, logout } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -15,138 +26,191 @@ const Login = () => {
     name: "",
   });
 
-  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Determine where to send the user after login (from Protected.jsx logic)
+  // 2. REDIRECT LOGIC
   const from = location.state?.from?.pathname || "/";
 
+  // 3. SUBMIT LOGIC: Login/Register
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
       if (isLogin) {
-        // Hits authController.login
         await login(formData.email, formData.password);
         navigate(from, { replace: true });
       } else {
-        // Hits authController.register
         await api.post("/auth/register", formData);
-        setIsLogin(true); // Switch to login view after successful registration
-        alert("Account created! Please log in.");
+        setIsLogin(true);
+        alert("ACCOUNT_INITIALIZED: Please log in.");
       }
     } catch (err) {
       setError(
-        err.response?.data?.error || "Authentication failed. Please try again.",
+        err.response?.data?.error || "ACCESS_DENIED: Check credentials.",
       );
     }
   };
 
+  // 4. LOGOUT LOGIC: Only triggered if user is already logged in
+  const handleLogoutAction = async () => {
+    try {
+      await logout(); // Calls your AuthContext logout logic
+      navigate("/login");
+    } catch (err) {
+      setError("LOGOUT_FAILED: System error.");
+    }
+  };
+
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-black text-slate-900">
-            {isLogin ? "Welcome Back" : "Join the Pulse"}
-          </h2>
-          <p className="text-slate-500 mt-2">
-            {isLogin
-              ? "Log in to start sharing your vibes."
-              : "Create an account to join the community."}
-          </p>
-        </div>
+    <div className="min-h-[85vh] flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-white border-3 border-ink p-8 md:p-10 rounded-[2.5rem] shadow-brutal-lg relative overflow-hidden">
+        {/* VIEW A: USER IS LOGGED IN (Show Logout) */}
+        {activeUser ? (
+          <div className="text-center py-6">
+            <div className="w-20 h-20 bg-green border-3 border-ink rounded-full flex items-center justify-center mx-auto mb-6 shadow-brutal animate-pulse">
+              <ShieldCheck size={40} />
+            </div>
+            <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-2">
+              Session_Active
+            </h2>
+            <p className="text-ink/60 font-bold text-xs uppercase mb-8 tracking-widest">
+              Identified as: {activeUser.username || activeUser.email}
+            </p>
 
-        {error && (
-          <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-600 rounded-lg text-sm font-medium">
-            {error}
+            <Button
+              variant="pink"
+              className="w-full py-4 text-lg"
+              onClick={handleLogoutAction}
+            >
+              <LogOut size={20} /> TERMINATE_SESSION
+            </Button>
+
+            <button
+              onClick={() => navigate("/")}
+              className="mt-6 font-black uppercase text-[10px] tracking-[0.2em] underline decoration-violet decoration-2 underline-offset-4"
+            >
+              Return to Feed
+            </button>
           </div>
-        )}
+        ) : (
+          /* VIEW B: USER IS LOGGED OUT (Show Login/Signup) */
+          <>
+            <div className="absolute -top-4 -right-4 w-20 h-20 bg-yellow border-3 border-ink rounded-full flex items-center justify-center animate-bounce">
+              <Zap size={30} />
+            </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
-            <>
-              <div className="relative">
-                <UserIcon
-                  className="absolute left-3 top-3 text-slate-400"
-                  size={18}
-                />
-                <input
-                  type="text"
-                  placeholder="Username"
-                  required
-                  className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                  onChange={(e) =>
-                    setFormData({ ...formData, username: e.target.value })
-                  }
-                />
+            <header className="text-center mb-10">
+              <h2 className="text-4xl font-black italic uppercase tracking-tighter">
+                {isLogin ? "Auth_Login" : "Init_User"}
+              </h2>
+              <p className="text-ink/60 font-bold text-xs uppercase mt-2 tracking-widest">
+                {isLogin ? "Synchronize with the Pulse" : "Register a new Node"}
+              </p>
+            </header>
+
+            {error && (
+              <div className="mb-6 p-4 bg-pink text-white border-3 border-ink rounded-xl font-black text-xs uppercase animate-shake">
+                ERR: {error}
               </div>
-              <div className="relative">
-                <UserIcon
-                  className="absolute left-3 top-3 text-slate-400"
-                  size={18}
-                />
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                />
-              </div>
-            </>
-          )}
-
-          <div className="relative">
-            <Mail className="absolute left-3 top-3 text-slate-400" size={18} />
-            <input
-              type="email"
-              placeholder="Email Address"
-              required
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="relative">
-            <Lock className="absolute left-3 top-3 text-slate-400" size={18} />
-            <input
-              type="password"
-              placeholder="Password"
-              required
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-            />
-          </div>
-
-          <Button type="submit" className="w-full py-3 mt-2">
-            {isLogin ? (
-              <>
-                <LogIn size={18} /> Log In
-              </>
-            ) : (
-              <>
-                <UserPlus size={18} /> Register
-              </>
             )}
-          </Button>
-        </form>
 
-        <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-indigo-600 font-bold hover:underline"
-          >
-            {isLogin
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Log in"}
-          </button>
-        </div>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {!isLogin && (
+                <>
+                  <div className="relative">
+                    <UserIcon
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-ink"
+                      size={18}
+                    />
+                    <input
+                      type="text"
+                      placeholder="USERNAME"
+                      required
+                      className="input-brutal pl-12"
+                      onChange={(e) =>
+                        setFormData({ ...formData, username: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="relative">
+                    <UserIcon
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-ink"
+                      size={18}
+                    />
+                    <input
+                      type="text"
+                      placeholder="FULL_NAME"
+                      className="input-brutal pl-12"
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="relative">
+                <Mail
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-ink"
+                  size={18}
+                />
+                <input
+                  type="email"
+                  placeholder="EMAIL_ADDRESS"
+                  required
+                  className="input-brutal pl-12"
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="relative">
+                <Lock
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-ink"
+                  size={18}
+                />
+                <input
+                  type="password"
+                  placeholder="SECURITY_KEY"
+                  required
+                  className="input-brutal pl-12"
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                />
+              </div>
+
+              <Button
+                type="submit"
+                variant="violet"
+                className="w-full py-4 mt-4 text-lg"
+              >
+                {isLogin ? (
+                  <>
+                    <LogIn size={20} /> AUTHORIZE
+                  </>
+                ) : (
+                  <>
+                    <UserPlus size={20} /> INITIALIZE
+                  </>
+                )}
+              </Button>
+            </form>
+
+            <div className="mt-10 pt-6 border-t-3 border-ink/10 text-center">
+              <button
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-cyan font-black uppercase text-xs tracking-widest hover:underline decoration-cyan decoration-4 underline-offset-4"
+              >
+                {isLogin
+                  ? "New here? [Create_Account]"
+                  : "Known user? [Authenticate]"}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

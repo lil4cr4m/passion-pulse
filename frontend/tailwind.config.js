@@ -4,25 +4,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Muted, softer versions of our brand colors
-        accent: "#FDE047", // Softer Yellow
-        vibe: "#8B5CF6", // Softer Purple
-        fresh: "#34D399", // Softer Emerald
-        canvas: "#F8FAFC", // Off-white background
+        offwhite: "#FFFFFF",
+        ink: "#000000",
+        yellow: "#FFD100", // Cyber Yellow
+        violet: "#A358FF", // Electric Violet
+        green: "#00FF85", // Neon Green
+        pink: "#FF3BFF", // Hot Pink
+        cyan: "#00E0FF", // Cyan Blue
       },
       boxShadow: {
-        // Changed from pure black to a deep navy-slate
-        "soft-brutal": "4px 4px 0px 0px rgba(15, 23, 42, 1)",
-        "soft-brutal-lg": "6px 6px 0px 0px rgba(15, 23, 42, 1)",
-        "soft-brutal-hover": "2px 2px 0px 0px rgba(15, 23, 42, 1)",
+        brutal: "5px 5px 0px 0px #000000",
+        "brutal-lg": "8px 8px 0px 0px #000000",
+        "brutal-sm": "3px 3px 0px 0px #000000",
       },
-      borderRadius: {
-        xl: "1.25rem", // Softer, more organic corners
-      },
-      borderWidth: {
-        3: "3px",
-      },
+      borderWidth: { 3: "3px" },
     },
   },
-  plugins: [],
 };

@@ -1,5 +1,9 @@
 import express from "express";
-import { getProfile, getLeaderboard } from "../controllers/userController.js";
+import {
+  getProfile,
+  updateProfile,
+  getLeaderboard,
+} from "../controllers/userController.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -16,6 +20,6 @@ router.get("/profile/:id", getProfile);
 /**
  * PROTECTED ROUTES (Optional additions)
  */
-// router.put('/profile', authenticateToken, updateProfile);
+router.put("/profile/:id", authenticateToken, updateProfile);
 
 export default router;

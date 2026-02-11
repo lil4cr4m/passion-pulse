@@ -6,7 +6,7 @@ import { logError } from "../utils/logger.js";
  * Aggregates Karma and activity counts for the Profile dashboard.
  */
 export const getProfile = async (req, res) => {
-  const { id } = req.params; // The ID of the user whose profile is being viewed
+  const { id } = req.params;
   try {
     const userStats = await query(
       `
@@ -32,8 +32,40 @@ export const getProfile = async (req, res) => {
 };
 
 /**
+ * UPDATE PROFILE
+ * Allows a user (or admin) to update name/bio.
+ */
+export const updateProfile = async (req, res) => {
+  const { id } = req.params;
+  const { name, bio } = req.body;
+
+  if (!req.user || (req.user.id !== id && req.user.role !== "admin")) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  try {
+    const result = await query(
+      `UPDATE users 
+       SET name = $1, bio = $2, updated_at = NOW() 
+       WHERE id = $3 
+       RETURNING id, username, email, name, bio, karma, role`,
+      [name ?? null, bio ?? null, id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    logError("userController.updateProfile", err, { id });
+    res.status(500).json({ error: "Failed to update profile" });
+  }
+};
+
+/**
  * GET LEADERBOARD
- * Fetches the top 10 users based on Karma (Requirement 1.6: Social Currency).
+ * Fetches the top 10 users based on Karma.
  */
 export const getLeaderboard = async (req, res) => {
   try {

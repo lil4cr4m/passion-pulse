@@ -12,6 +12,7 @@ import Navbar from "./components/layout/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
 import CreatePulse from "./pages/CreatePulse";
 
 /**
@@ -24,14 +25,15 @@ function App() {
       {" "}
       {/* 1. Provider starts here */}
       <Router>
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-pulse-violet">
           <Navbar /> {/* 2. Navbar is now INSIDE and can see the Auth state */}
-          <main className="container mx-auto">
+          <main className="container mx-auto px-4 py-8">
             <Routes>
               {/* PUBLIC ROUTES */}
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/profile/:id" element={<Profile />} />
+              <Route path="/settings/profile" element={<EditProfile />} />
 
               {/* PROTECTED ROUTES: Only accessible if logged in */}
               <Route

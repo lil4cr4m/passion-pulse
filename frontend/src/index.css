@@ -4,14 +4,18 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-black antialiased;
-    /* Subtle 2026 grid pattern */
-    background-image: radial-gradient(#000000 0.5px, transparent 0.5px);
-    background-size: 24px 24px;
+    @apply bg-offwhite text-ink antialiased font-sans;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-black tracking-tighter uppercase italic leading-none;
   }
 }
 
-/* Make selections pop */
-::selection {
-  @apply bg-accent text-black;
+@layer components {
+  /* Standardized input field for all forms */
+  .input-brutal {
+    @apply w-full border-3 border-ink p-4 rounded-xl focus:outline-none focus:bg-yellow/10 transition-all font-bold shadow-brutal-sm focus:shadow-brutal;
+  }
 }

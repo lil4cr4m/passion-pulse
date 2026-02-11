@@ -1,77 +1,81 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Flame, PlusSquare, User, LogOut, Award } from "lucide-react";
+import { Button } from "../ui/Button";
+import { LogOut, LogIn, Activity, User as UserIcon } from "lucide-react";
 
-const Navbar = () => {
-  const { user, logout } = useAuth();
+export const Navbar = () => {
+  const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (err) {
+      console.error("LOGOUT_INTERRUPTED", err);
+    }
   };
 
   return (
-    <nav className="bg-white border-b border-slate-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        {/* LOGO */}
+    <nav className="sticky top-0 z-50 bg-offwhite border-b-3 border-ink p-4">
+      <div className="max-w-[1400px] mx-auto flex justify-between items-center">
         <Link
           to="/"
-          className="flex items-center gap-2 text-indigo-600 font-black text-xl tracking-tight"
+          className="text-3xl font-black italic tracking-tighter hover:scale-105 transition-transform"
         >
-          <Flame fill="currentColor" />
-          <span>PassionPulse</span>
+          PASSION<span className="text-violet">PULSE</span>
         </Link>
 
-        {/* NAVIGATION */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 md:gap-8">
           <Link
             to="/"
-            className="text-slate-600 hover:text-indigo-600 font-medium transition-colors"
+            className={`font-black uppercase text-sm tracking-tight ${
+              pathname === "/"
+                ? "text-pink underline decoration-4 underline-offset-4"
+                : "hover:text-violet"
+            }`}
           >
             Feed
           </Link>
 
           {user ? (
-            <div className="flex items-center gap-4">
-              {/* Create Pulse Button */}
-              <Link
-                to="/create"
-                className="flex items-center gap-1 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition-all"
-              >
-                <PlusSquare size={18} />
-                <span>Go Live</span>
-              </Link>
-
-              {/* Karma Display */}
-              <div className="flex items-center gap-1 bg-amber-50 text-amber-700 px-3 py-1 rounded-full border border-amber-100 text-sm font-bold">
-                <Award size={16} />
-                {user.karma}
-              </div>
-
-              {/* Profile Link */}
+            <>
+              {/* DYNAMIC PROFILE LINK: Uses user.id from AuthContext/Database */}
               <Link
                 to={`/profile/${user.id}`}
-                className="text-slate-600 hover:text-indigo-600"
+                className={`font-black uppercase text-sm tracking-tight hidden md:flex items-center gap-2 ${
+                  pathname === `/profile/${user.id}`
+                    ? "text-pink underline decoration-4 underline-offset-4"
+                    : "hover:text-violet"
+                }`}
               >
-                <User size={20} />
+                <UserIcon size={16} /> Profile
               </Link>
 
-              {/* Logout */}
-              <button
+              <Link to="/create">
+                <Button variant="yellow" className="py-2 text-xs px-4">
+                  <Activity size={14} className="mr-1" /> Go Live
+                </Button>
+              </Link>
+
+              <Button
+                variant="pink"
+                className="py-2 text-xs px-4 shadow-brutal-sm"
                 onClick={handleLogout}
-                className="text-slate-400 hover:text-rose-500 transition-colors"
               >
-                <LogOut size={20} />
-              </button>
-            </div>
+                <LogOut size={16} className="mr-1" /> Logout
+              </Button>
+            </>
           ) : (
-            <Link
-              to="/login"
-              className="bg-slate-900 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-800 transition-all"
-            >
-              Login
+            <Link to="/login">
+              <Button
+                variant="cyan"
+                className="py-2 text-xs px-6 shadow-brutal-sm"
+              >
+                <LogIn size={16} className="mr-1" /> Login
+              </Button>
             </Link>
           )}
         </div>
