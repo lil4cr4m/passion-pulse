@@ -58,7 +58,8 @@ export const login = async (req, res) => {
   try {
     if (!ACCESS_SECRET || !REFRESH_SECRET) {
       return res.status(500).json({
-        error: "Server auth secrets missing. Please set JWT_SECRET and JWT_REFRESH_SECRET",
+        error:
+          "Server auth secrets missing. Please set JWT_SECRET and JWT_REFRESH_SECRET",
       });
     }
 
