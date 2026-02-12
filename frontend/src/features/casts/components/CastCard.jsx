@@ -254,7 +254,7 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
           ) : (
             <div className="flex gap-2">
               <Button
-                variant="cyan"
+                variant="neon"
                 className="flex-1"
                 onClick={() => setEditMode(true)}
               >
@@ -262,7 +262,7 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
               </Button>
               <Button
                 type="button"
-                variant="cyan"
+                variant="neon"
                 className="flex-1"
                 onClick={handleDelete}
                 disabled={deleting}

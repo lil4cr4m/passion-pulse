@@ -89,8 +89,8 @@ export const Button = ({
         "border-[0.1875rem] border-ink px-[1.5rem] py-[0.75rem] font-black rounded-[0.75rem] transition-all",
 
         // 🎭 BRUTALIST SHADOW & INTERACTION
-        // Large shadow that disappears when "pressed" (active state)
-        "shadow-brutal active:translate-x-[0.1875rem] active:translate-y-[0.1875rem] active:shadow-none",
+        // Raised shadow effect that flattens on hover, then fully presses on active
+        "shadow-brutal-xs hover:shadow-none active:translate-x-[0.125rem] active:translate-y-[0.125rem] active:shadow-none",
 
         // ✍️ TYPOGRAPHY & LAYOUT
         // Bold, uppercase text with tight tracking, flexbox for icons

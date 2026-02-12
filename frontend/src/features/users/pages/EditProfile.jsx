@@ -145,7 +145,7 @@ const EditProfile = () => {
           <Button
             type="submit"
             variant="cyan"
-            className="w-full py-4 text-lg shadow-brutal hover:shadow-brutal-lg"
+            className="w-full py-4 text-lg shadow-brutal-xs"
             disabled={loading}
           >
             <Save size={20} className="mr-2" />
@@ -231,7 +231,7 @@ const EditProfile = () => {
           <Button
             type="submit"
             variant="cyan"
-            className="w-full py-4 text-lg shadow-brutal hover:shadow-brutal-lg"
+            className="w-full py-4 text-lg shadow-brutal-xs"
             disabled={pwLoading}
           >
             <Save size={20} className="mr-2" />

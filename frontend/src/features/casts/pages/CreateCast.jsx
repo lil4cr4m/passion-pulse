@@ -133,7 +133,7 @@ const CreateCast = () => {
             <Button
               type="submit"
               variant="violet"
-              className="w-full py-5 text-xl shadow-brutal hover:shadow-brutal-lg"
+              className="w-full py-5 text-xl shadow-brutal-xs"
               disabled={loading}
             >
               {loading ? "SYNCING..." : "LAUNCH BROADCAST"}

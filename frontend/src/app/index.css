@@ -39,7 +39,7 @@
   /* 🎨 BODY DEFAULTS */
   /* Sets the foundation for the entire application */
   body {
-    @apply bg-offwhite      /* Light gray background for warmth */
+    @apply bg-[#f5f5f0]   /* Slightly warm off-white background for better component contrast */
            text-ink         /* Black text for maximum contrast */
            antialiased      /* Smooth font rendering */
            font-sans; /* Sans-serif font stack (Public Sans) */

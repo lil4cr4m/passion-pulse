@@ -61,6 +61,7 @@ export default {
       // Creates the characteristic neo-brutalist depth effect
       boxShadow: {
         // Standard shadow sizes with black offset shadows
+        "brutal-xs": "2px 2px 0px 0px rgba(0,0,0,1)", // Extra small - buttons
         "brutal-sm": "4px 4px 0px 0px rgba(0,0,0,1)", // Small elements
         brutal: "8px 8px 0px 0px rgba(0,0,0,1)", // Default cards/buttons
         "brutal-lg": "12px 12px 0px 0px rgba(0,0,0,1)", // Large modals/panels

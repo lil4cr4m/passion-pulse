@@ -174,7 +174,7 @@ export const Navbar = () => {
               {/* 🚪 LOGOUT BUTTON */}
               <Button
                 variant="cyan"
-                className="py-2 text-xs px-4 shadow-brutal-sm"
+                className="py-2 text-xs px-4 shadow-brutal-xs"
                 onClick={handleLogout}
               >
                 <LogOut size={16} className="mr-1" /> Logout
@@ -187,7 +187,7 @@ export const Navbar = () => {
               <Link to="/login">
                 <Button
                   variant="cyan"
-                  className="py-2 text-xs px-6 shadow-brutal-sm"
+                  className="py-2 text-xs px-6 shadow-brutal-xs"
                 >
                   <LogIn size={16} className="mr-1" /> Login
                 </Button>
