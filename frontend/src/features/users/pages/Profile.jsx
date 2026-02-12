@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import api from "../../../shared/api/axios";
 import { useAuth } from "../../auth/context/AuthContext";
 import { Button } from "../../../shared/ui/Button";
@@ -311,6 +311,14 @@ const Profile = () => {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-black text-ink">{note.cast_title}</p>
+                      {note.sender_username && note.sender_id && (
+                        <Link
+                          to={`/profile/${note.sender_id}`}
+                          className="text-xs text-violet hover:underline font-black uppercase tracking-wide inline-block mt-1"
+                        >
+                          From: @{note.sender_username}
+                        </Link>
+                      )}
                       <p className="text-xs text-ink/60 uppercase tracking-wide">
                         {new Date(note.created_at).toLocaleString()}
                       </p>

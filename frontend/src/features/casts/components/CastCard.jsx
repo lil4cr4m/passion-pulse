@@ -33,6 +33,7 @@
  */
 
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../auth/context/AuthContext";
 import { Button } from "../../../shared/ui/Button";
 import CreditForm from "./CreditForm";
@@ -140,7 +141,10 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
       </p>
 
       <div className="flex items-center justify-between mb-4 text-[0.85rem] font-black uppercase tracking-tighter">
-        <div className="flex items-center gap-3">
+        <Link
+          to={`/profile/${cast.creator_id}`}
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+        >
           <div className="w-10 h-10 bg-pink border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_black]">
             <UserIcon size={18} className="text-white" />
           </div>
@@ -152,7 +156,7 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
               {cast.skill?.name || cast.skill_name || "Skillcaster"}
             </div>
           </div>
-        </div>
+        </Link>
         <div className="text-right leading-tight">
           <p className="text-[0.6rem] text-black/60">TOTAL_CREDIT</p>
           <p className="text-xl">{cast.credit ?? 0}</p>

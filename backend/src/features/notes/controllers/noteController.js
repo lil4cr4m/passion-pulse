@@ -84,7 +84,8 @@ export const getUserNotes = async (req, res) => {
               gn.content,
               gn.created_at,
               c.title AS cast_title,
-              u.username AS sender_username
+              u.username AS sender_username,
+              u.id AS sender_id
        FROM gratitude_notes gn
         JOIN casts c ON gn.cast_id = c.id
        LEFT JOIN users u ON gn.sender_id = u.id

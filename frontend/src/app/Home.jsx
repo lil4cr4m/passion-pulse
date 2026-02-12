@@ -81,10 +81,10 @@ const Home = () => {
 
       {/* ==================== LEFT SIDEBAR: USER IDENTITY ==================== */}
       {/* 👤 IDENTITY COLUMN - User stats, role, and quick actions */}
-      {/* RESPONSIVE BEHAVIOR: order-2 on mobile, order-1 on desktop */}
+      {/* RESPONSIVE BEHAVIOR: order-1 on mobile and desktop */}
       {/* STICKY POSITIONING: Stays in view when scrolling on large screens */}
       <aside
-        className="lg:col-span-3 lg:sticky lg:top-[6rem] space-y-6 order-2 lg:order-1"
+        className="lg:col-span-3 lg:sticky lg:top-[6rem] space-y-6 order-1"
         aria-label="User actions and stats"
       >
         {/* 🎨 IDENTITY CARD - Neo-brutalism design with heavy shadows and borders */}
@@ -124,9 +124,9 @@ const Home = () => {
 
       {/* ==================== CENTER: MAIN CONTENT FEED ==================== */}
       {/* 📺 FEED COLUMN - Primary content area with cast posts */}
-      {/* RESPONSIVE BEHAVIOR: order-1 on mobile, order-2 on desktop */}
+      {/* RESPONSIVE BEHAVIOR: order-2 on mobile and desktop */}
       {/* Takes up 6/12 grid columns on desktop for optimal reading width */}
-      <section className="lg:col-span-6 space-y-[2.5rem] order-1 lg:order-2">
+      <section className="lg:col-span-6 space-y-[2.5rem] order-2">
         <section className="space-y-[1.5rem]">
           {/* 🔴 LIVE STATUS HEADER - Shows real-time activity indicator */}
           <div className="flex items-center justify-between mb-[0.5rem]">
