@@ -40,6 +40,7 @@ CREATE TABLE skills (
 );
 
 -- CASTS: The "Live Now" broadcasting sessions
+-- Status workflow: LIVE (active, default) → PAUSED (hidden) → ENDED (inactive) → ARCHIVED (soft deleted)
 CREATE TABLE casts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     creator_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -47,7 +48,7 @@ CREATE TABLE casts (
     title VARCHAR(100) NOT NULL,
     description TEXT,
     meeting_link TEXT NOT NULL,
-    is_live BOOLEAN DEFAULT true,
+    status VARCHAR(10) DEFAULT 'LIVE' CHECK (status IN ('LIVE', 'PAUSED', 'ENDED', 'ARCHIVED')),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

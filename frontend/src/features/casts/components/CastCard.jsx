@@ -46,6 +46,9 @@ import {
   Trash2,
   Save,
   X,
+  Play,
+  Pause,
+  StopCircle,
 } from "lucide-react";
 
 /**
@@ -86,15 +89,29 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
     user?.id === cast.creator_id || (user && user.role === "admin");
 
   /**
-   * Delete Handler - Remove Cast
+   * Status Update Handlers - Manage Cast Status
    *
-   * SECURITY: Only owners/admins can delete
-   * UX: Confirmation dialog prevents accidental deletion
-   * OPTIMISTIC: Immediately updates parent component via callback
+   * SECURITY: Only owners/admins can change status
+   * STATES: LIVE (active), PAUSED (temporarily stopped), ENDED (finished)
    */
 
+  const handleStatusChange = async (newStatus) => {
+    if (newStatus === "ENDED" && !window.confirm("End this cast permanently?"))
+      return;
+    setSaving(true);
+    try {
+      const res = await api.put(`/casts/${cast.id}`, { status: newStatus });
+      onUpdate?.(res.data);
+    } catch (err) {
+      console.error("Error updating cast status:", err);
+      alert("Unable to update cast status.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleDelete = async () => {
-    if (!window.confirm("End this cast?")) return;
+    if (!window.confirm("Delete this cast permanently?")) return;
     setDeleting(true);
     try {
       await api.delete(`/casts/${cast.id}`);
@@ -128,8 +145,13 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
         <span className="bg-ink text-offwhite px-2 py-1 text-[0.6rem] font-black uppercase tracking-widest">
           {cast.skill?.channel || "GENERAL"} // CHANNEL
         </span>
-        {cast.is_live && (
-          <div className="h-3 w-3 bg-danger rounded-full animate-pulse border-2 border-ink" />
+        {/* LIVE status: green animated dot (neon color) */}
+        {cast.status === "LIVE" && (
+          <div className="h-3 w-3 bg-neon rounded-full animate-pulse border-2 border-ink" />
+        )}
+        {/* ENDED status: red static dot (danger color) */}
+        {cast.status === "ENDED" && (
+          <div className="h-3 w-3 bg-danger rounded-full border-2 border-ink" />
         )}
       </div>
 
@@ -163,33 +185,116 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
         </div>
       </div>
 
-      <div className="flex gap-3">
-        <a
-          href={cast.meeting_link}
-          target="_blank"
-          rel="noreferrer"
-          className="flex-1"
-        >
+      {/* VIEWER BUTTONS - One line layout */}
+      {!isOwner && (
+        <div className="flex gap-2">
+          {/* Show JOIN_CAST for LIVE casts, INACTIVE_CAST for ENDED casts */}
+          {cast.status === "LIVE" ? (
+            <a
+              href={cast.meeting_link}
+              target="_blank"
+              rel="noreferrer"
+              className="flex-1"
+            >
+              <Button
+                variant="violet"
+                className="w-full flex items-center justify-center gap-2 text-xs"
+              >
+                JOIN_CAST <ExternalLink size={14} />
+              </Button>
+            </a>
+          ) : cast.status === "ENDED" ? (
+            <Button
+              variant="outline"
+              className="flex-1 text-xs cursor-not-allowed opacity-60"
+              disabled
+            >
+              INACTIVE_CAST
+            </Button>
+          ) : null}
+          {/* Heart button for sending notes - available for both LIVE and ENDED */}
+          {user && (cast.status === "LIVE" || cast.status === "ENDED") && (
+            <Button
+              variant="outline"
+              className="px-3"
+              onClick={() => setShowCreditForm(!showCreditForm)}
+            >
+              <Heart
+                size={18}
+                className={showCreditForm ? "fill-pink text-pink" : "text-ink"}
+              />
+            </Button>
+          )}
+        </div>
+      )}
+
+      {/* OWNER BUTTONS - One line layout with edit, pause/resume, end, delete */}
+      {isOwner && !editMode && (
+        <div className="flex gap-2">
           <Button
-            variant="violet"
-            className="w-full flex items-center justify-center gap-2"
+            variant="cyan"
+            className="flex-1 text-xs"
+            onClick={() => setEditMode(true)}
           >
-            JOIN_CAST <ExternalLink size={16} />
+            <PencilLine size={14} /> EDIT
           </Button>
-        </a>
-        {user && !isOwner && (
-          <Button
-            variant="outline"
-            className="px-3"
-            onClick={() => setShowCreditForm(!showCreditForm)}
-          >
-            <Heart
-              size={18}
-              className={showCreditForm ? "fill-pink text-pink" : "text-ink"}
-            />
-          </Button>
-        )}
-      </div>
+          {/* LIVE casts can be paused */}
+          {cast.status === "LIVE" && (
+            <Button
+              variant="yellow"
+              className="flex-1 text-xs"
+              onClick={() => handleStatusChange("PAUSED")}
+              disabled={saving}
+            >
+              <Pause size={14} /> PAUSE_CAST
+            </Button>
+          )}
+          {/* PAUSED casts can be resumed */}
+          {cast.status === "PAUSED" && (
+            <Button
+              variant="neon"
+              className="flex-1 text-xs"
+              onClick={() => handleStatusChange("LIVE")}
+              disabled={saving}
+            >
+              <Play size={14} /> RESUME_CAST
+            </Button>
+          )}
+          {/* ENDED casts can be resumed to LIVE */}
+          {cast.status === "ENDED" && (
+            <Button
+              variant="neon"
+              className="flex-1 text-xs"
+              onClick={() => handleStatusChange("LIVE")}
+              disabled={saving}
+            >
+              <Play size={14} /> RESUME_CAST
+            </Button>
+          )}
+          {/* END button available for LIVE and PAUSED casts */}
+          {(cast.status === "LIVE" || cast.status === "PAUSED") && (
+            <Button
+              variant="danger"
+              className="flex-1 text-xs"
+              onClick={() => handleStatusChange("ENDED")}
+              disabled={saving}
+            >
+              <StopCircle size={14} /> END_CAST
+            </Button>
+          )}
+          {/* DELETE button (archives cast) - available for all non-archived casts */}
+          {cast.status !== "ARCHIVED" && (
+            <Button
+              variant="danger"
+              className="flex-1 text-xs"
+              onClick={handleDelete}
+              disabled={deleting}
+            >
+              <Trash2 size={14} /> {deleting ? "DELETING..." : "DELETE_CAST"}
+            </Button>
+          )}
+        </div>
+      )}
 
       {showCreditForm && (
         <div className="mt-3 p-3 border-2 border-ink rounded-xl bg-pink-muted/10 animate-in slide-in-from-top-2 duration-300">
@@ -200,77 +305,57 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
         </div>
       )}
 
-      {isOwner && (
-        <div className="mt-4 space-y-3">
-          {editMode ? (
-            <form onSubmit={handleUpdate} className="space-y-2">
-              <input
-                type="text"
-                className="input-brutal"
-                value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-                placeholder="Cast title"
-                required
-              />
-              <textarea
-                className="input-brutal h-24 resize-none"
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                placeholder="Description"
-              />
-              <input
-                type="url"
-                className="input-brutal"
-                value={formData.meeting_link}
-                onChange={(e) =>
-                  setFormData({ ...formData, meeting_link: e.target.value })
-                }
-                placeholder="Meeting link"
-                required
-              />
-              <div className="flex gap-2">
-                <Button
-                  type="submit"
-                  variant="violet"
-                  className="flex-1"
-                  disabled={saving}
-                >
-                  <Save size={18} /> {saving ? "Saving..." : "Save"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => setEditMode(false)}
-                >
-                  <X size={18} /> Cancel
-                </Button>
-              </div>
-            </form>
-          ) : (
+      {/* EDIT FORM - Shows when owner clicks edit */}
+      {isOwner && editMode && (
+        <div className="mt-4">
+          <form onSubmit={handleUpdate} className="space-y-2">
+            <input
+              type="text"
+              className="input-brutal"
+              value={formData.title}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
+              placeholder="Cast title"
+              required
+            />
+            <textarea
+              className="input-brutal h-24 resize-none"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              placeholder="Description"
+            />
+            <input
+              type="url"
+              className="input-brutal"
+              value={formData.meeting_link}
+              onChange={(e) =>
+                setFormData({ ...formData, meeting_link: e.target.value })
+              }
+              placeholder="Meeting link"
+              required
+            />
             <div className="flex gap-2">
               <Button
-                variant="neon"
-                className="flex-1"
-                onClick={() => setEditMode(true)}
+                type="submit"
+                variant="violet"
+                className="flex-1 text-xs"
+                disabled={saving}
               >
-                <PencilLine size={18} /> Edit
+                <Save size={14} /> {saving ? "SAVING..." : "SAVE"}
               </Button>
               <Button
                 type="button"
-                variant="neon"
-                className="flex-1"
-                onClick={handleDelete}
-                disabled={deleting}
+                variant="outline"
+                className="flex-1 text-xs"
+                onClick={() => setEditMode(false)}
               >
-                <Trash2 size={18} /> {deleting ? "Ending..." : "End Cast"}
+                <X size={14} /> CANCEL
               </Button>
             </div>
-          )}
+          </form>
         </div>
       )}
     </div>

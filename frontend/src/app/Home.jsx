@@ -153,7 +153,7 @@ const Home = () => {
             variant="neon"
             className="w-full py-4 text-lg text-center justify-center"
           >
-            START_CASTING
+            START_CAST
           </Button>
         </Link>
       </aside>

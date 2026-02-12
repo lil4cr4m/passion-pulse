@@ -11,6 +11,7 @@ import {
   getAllCasts,
   updateCast,
   deleteCast,
+  getPastCasts,
 } from "../controllers/castController.js";
 
 const router = express.Router();
@@ -29,6 +30,16 @@ const router = express.Router();
  * - q: Search query for title, description, username, or skill name
  */
 router.get("/", getAllCasts);
+
+/**
+ * GET /api/casts/past/:userId
+ * Retrieves archived/past casts for a specific user
+ * Shows all casts with ARCHIVED status for user's profile history
+ *
+ * Path Parameters:
+ * - userId: User UUID to get past casts for
+ */
+router.get("/past/:userId", getPastCasts);
 
 // ==========================================
 // PROTECTED ENDPOINTS - Authentication Required

@@ -12,8 +12,8 @@ import { logError } from "../../../shared/utils/logger.js";
 // ==========================================
 
 /**
- * Retrieves active live casts with filtering and search capabilities
- * Shows casts created within the last 24 hours that are marked as live
+ * Retrieves active casts with filtering and search capabilities
+ * Shows LIVE and ENDED casts to all users (PAUSED casts are hidden from feed)
  * Supports filtering by skill category and text search
  *
  * Query parameters:
@@ -24,13 +24,13 @@ export const getAllCasts = async (req, res) => {
   const { category, q } = req.query;
 
   try {
-    // Base query: Get live casts from last 24 hours with user and skill info
+    // Base query: Get LIVE and ENDED casts (exclude PAUSED and ARCHIVED) from last 24 hours
     let queryText = `
       SELECT c.*, u.username, u.credit, s.name as skill_name, s.channel
       FROM casts c
       JOIN users u ON c.creator_id = u.id
       JOIN skills s ON c.skill_id = s.id
-      WHERE c.is_live = true 
+      WHERE c.status IN ('LIVE', 'ENDED')
       AND c.created_at > NOW() - INTERVAL '24 hours'`;
 
     const params = [];
@@ -100,7 +100,7 @@ export const createCast = async (req, res) => {
  */
 export const updateCast = async (req, res) => {
   const { id } = req.params;
-  const { skill_id, title, description, meeting_link, is_live } = req.body;
+  const { skill_id, title, description, meeting_link, status } = req.body;
 
   try {
     // Update cast with permission check in WHERE clause
@@ -110,7 +110,7 @@ export const updateCast = async (req, res) => {
            title = COALESCE($4, title),
            description = COALESCE($5, description),
            meeting_link = COALESCE($6, meeting_link),
-           is_live = COALESCE($7, is_live)
+           status = COALESCE($7, status)
        WHERE id = $1 AND (creator_id = $2 OR $8 = 'admin')
        RETURNING *`,
       [
@@ -120,7 +120,7 @@ export const updateCast = async (req, res) => {
         title,
         description,
         meeting_link,
-        is_live,
+        status,
         req.user.role,
       ],
     );
@@ -140,15 +140,16 @@ export const updateCast = async (req, res) => {
 };
 
 /**
- * Permanently deletes a cast and all associated data
- * Only the cast creator or admins can delete casts
- * CASCADE constraints automatically handle related notes
+ * Archives a cast (soft delete)
+ * Only the cast creator or admins can archive casts
+ * Sets status to ARCHIVED instead of deleting from database
+ * This preserves cast history for user's profile
  */
 export const deleteCast = async (req, res) => {
   try {
-    // Delete cast with ownership/admin permission check
+    // Soft delete: Set status to ARCHIVED instead of deleting
     const result = await query(
-      "DELETE FROM casts WHERE id = $1 AND (creator_id = $2 OR $3 = 'admin')",
+      "UPDATE casts SET status = 'ARCHIVED' WHERE id = $1 AND (creator_id = $2 OR $3 = 'admin') RETURNING *",
       [req.params.id, req.user.id, req.user.role],
     );
 
@@ -159,9 +160,35 @@ export const deleteCast = async (req, res) => {
         .json({ error: "Cast not found or permission denied" });
     }
 
-    res.json({ message: "Cast ended" });
+    res.json({ message: "Cast archived successfully", cast: result.rows[0] });
   } catch (err) {
     logError("castController.deleteCast", err, { id: req.params.id });
-    res.status(500).json({ error: "Deletion failed" });
+    res.status(500).json({ error: "Archive failed" });
+  }
+};
+
+/**
+ * Get archived/past casts for a specific user
+ * Returns all casts with ARCHIVED status for the specified user
+ * Accessible by the user themselves or admins
+ */
+export const getPastCasts = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Get archived casts for this user
+    const pastCasts = await query(
+      `SELECT c.*, s.name as skill_name, s.channel
+       FROM casts c
+       JOIN skills s ON c.skill_id = s.id
+       WHERE c.creator_id = $1 AND c.status = 'ARCHIVED'
+       ORDER BY c.updated_at DESC`,
+      [userId],
+    );
+
+    res.json(pastCasts.rows);
+  } catch (err) {
+    logError("castController.getPastCasts", err, { userId });
+    res.status(500).json({ error: "Failed to fetch past casts" });
   }
 };

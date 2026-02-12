@@ -174,12 +174,13 @@ curl -X POST http://localhost:5001/api/auth/login \
 
 ### 📺 Casts (`/api/casts`)
 
-| Method | Endpoint | Description     | Params                                  | Body                                           | Returns                                                    | Auth          |
-| ------ | -------- | --------------- | --------------------------------------- | ---------------------------------------------- | ---------------------------------------------------------- | ------------- |
-| GET    | `/`      | Get all casts   | `skill_id`, `status`, `limit`, `offset` | None                                           | `[{id, title, creator_id, username, skill, is_live, ...}]` | Public        |
-| POST   | `/`      | Create new cast | None                                    | `{title, description, skill_id, meeting_link}` | `{id, ...cast}`                                            | Authenticated |
-| PUT    | `/:id`   | Update cast     | `id`                                    | `{title, description, meeting_link, is_live}`  | `{message, cast}`                                          | Owner / Admin |
-| DELETE | `/:id`   | Delete cast     | `id`                                    | None                                           | `{message}`                                                | Owner / Admin |
+| Method | Endpoint        | Description         | Params                                  | Body                                           | Returns                                                   | Auth          |
+| ------ | --------------- | ------------------- | --------------------------------------- | ---------------------------------------------- | --------------------------------------------------------- | ------------- |
+| GET    | `/`             | Get all casts       | `skill_id`, `status`, `limit`, `offset` | None                                           | `[{id, title, creator_id, username, skill, status, ...}]` | Public        |
+| GET    | `/past/:userId` | Get user past casts | `userId`                                | None                                           | `[{id, title, skill_name, status: 'ARCHIVED', ...}]`      | Public        |
+| POST   | `/`             | Create new cast     | None                                    | `{title, description, skill_id, meeting_link}` | `{id, ...cast}`                                           | Authenticated |
+| PUT    | `/:id`          | Update cast         | `id`                                    | `{title, description, meeting_link, status}`   | `{message, cast}`                                         | Owner / Admin |
+| DELETE | `/:id`          | Archive cast        | `id`                                    | None                                           | `{message, cast}`                                         | Owner / Admin |
 
 **Status Codes:**
 
@@ -191,8 +192,10 @@ curl -X POST http://localhost:5001/api/auth/login \
 
 **Cast Status:**
 
-- `is_live: true` - Active cast
-- `is_live: false` - Completed/ended cast
+- `LIVE` - Active/broadcasting cast (default when created), green animated dot
+- `PAUSED` - Temporarily stopped cast (hidden from public feed, visible to creator/admin only)
+- `ENDED` - Completed/inactive cast (red static dot, visible to all, can receive notes)
+- `ARCHIVED` - Soft deleted cast (moved to past casts, not visible in main feed)
 
 ---
 
@@ -287,7 +290,7 @@ curl -X POST http://localhost:5001/api/auth/login \
 - title (VARCHAR) NOT NULL
 - description (TEXT)
 - meeting_link (TEXT) NOT NULL
-- is_live (BOOLEAN) DEFAULT true
+- status (VARCHAR) DEFAULT 'PAUSED' CHECK (status IN ('LIVE', 'PAUSED', 'ENDED'))
 - created_at (TIMESTAMPTZ)
 - updated_at (TIMESTAMPTZ)
 ```
@@ -424,7 +427,7 @@ Content-Type: application/json
   "title": "React Fundamentals Workshop",
   "description": "Learn React basics in 30 minutes",
   "meeting_link": "https://zoom.us/j/123456789",
-  "is_live": true,
+  "status": "LIVE",
   "created_at": "2026-02-12T14:23:00.000Z",
   "updated_at": "2026-02-12T14:23:00.000Z"
 }
