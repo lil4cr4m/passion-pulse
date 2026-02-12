@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { query } from "../config/db.js";
-import { logError } from "../utils/logger.js";
+import { query } from "../../../shared/config/db.js";
+import { logError } from "../../../shared/utils/logger.js";
 
 // Prefer dedicated refresh secret; provide dev-safe defaults if env is missing to avoid 500s locally
 const ACCESS_SECRET = process.env.JWT_SECRET || "dev_access_secret";

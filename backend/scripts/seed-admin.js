@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { query } from "./src/config/db.js";
+import { query } from "../src/shared/config/db.js";
 import dotenv from "dotenv";
 
 dotenv.config();

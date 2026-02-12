@@ -7,7 +7,7 @@ import {
   deleteUser,
   updateUser,
 } from "../controllers/userController.js";
-import { authenticateToken } from "../middleware/authMiddleware.js";
+import { authenticateToken } from "../../../shared/middleware/authMiddleware.js";
 
 const router = express.Router();
 

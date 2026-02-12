@@ -1,17 +1,17 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { logError } from "./utils/logger.js";
+import { logError } from "../shared/utils/logger.js";
 
 // Import Routes
-import authRoutes from "./routes/authRoutes.js";
-import castRoutes from "./routes/castRoutes.js";
-import skillRoutes from "./routes/skillRoutes.js";
-import noteRoutes from "./routes/noteRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
+import authRoutes from "../features/auth/routes/authRoutes.js";
+import castRoutes from "../features/casts/routes/castRoutes.js";
+import skillRoutes from "../features/skills/routes/skillRoutes.js";
+import noteRoutes from "../features/notes/routes/noteRoutes.js";
+import userRoutes from "../features/users/routes/userRoutes.js";
 
 // Import our database query helper
-import { query } from "./config/db.js";
+import { query } from "../shared/config/db.js";
 
 // Load environment variables
 dotenv.config();

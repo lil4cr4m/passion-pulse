@@ -1,5 +1,5 @@
-import { query } from "../config/db.js";
-import { logError } from "../utils/logger.js";
+import { query } from "../../../shared/config/db.js";
+import { logError } from "../../../shared/utils/logger.js";
 
 /**
  * SEND GRATITUDE
