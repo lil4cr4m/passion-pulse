@@ -1,15 +1,34 @@
+/**
+ * GRATITUDE NOTES CONTROLLER
+ * Handles the appreciation system where users send thank-you notes to cast creators
+ * Automatically triggers credit rewards through database triggers
+ * Prevents self-gratitude and manages note CRUD operations
+ */
+
 import { query } from "../../../shared/config/db.js";
 import { logError } from "../../../shared/utils/logger.js";
 
+// ==========================================
+// GRATITUDE SYSTEM ENDPOINTS
+// ==========================================
+
 /**
- * SEND GRATITUDE
- * Links feedback to credit. Triggers 'award_credit' in the DB (Requirement 1.6).
+ * Creates a new gratitude note and triggers automatic credit reward
+ * When someone sends gratitude for a cast, the creator receives +10 credits
+ * Includes fraud prevention by blocking self-gratitude
+ *
+ * Database triggers handle the credit awarding automatically
+ *
+ * Body parameters:
+ * - cast_id: UUID of the cast being appreciated
+ * - content: The gratitude message text
  */
 export const createNote = async (req, res) => {
   const { cast_id, content } = req.body;
 
   try {
-    // Security check: Prevent thanking yourself for credit farming
+    // Security check: Prevent gratitude fraud by blocking self-appreciation
+    // Users cannot send gratitude to their own casts to farm credits
     const castOwner = await query(
       "SELECT creator_id FROM casts WHERE id = $1",
       [cast_id],
@@ -20,13 +39,13 @@ export const createNote = async (req, res) => {
         .json({ error: "You cannot send gratitude to your own cast" });
     }
 
-    // 1. Insert Note
+    // Insert the gratitude note - database trigger handles credit reward
     const newNote = await query(
       "INSERT INTO gratitude_notes (cast_id, sender_id, content) VALUES ($1, $2, $3) RETURNING *",
       [cast_id, req.user.id, content],
     );
 
-    // 2. FETCH CREATOR INFO: For frontend confirmation
+    // Fetch creator info for user-friendly confirmation message
     const creatorRes = await query(
       "SELECT u.username FROM users u JOIN casts c ON u.id = c.creator_id WHERE c.id = $1",
       [cast_id],
@@ -43,18 +62,23 @@ export const createNote = async (req, res) => {
 };
 
 /**
- * GET NOTES FOR A USER'S CASTS
- * Returns gratitude notes left on any cast created by the given user.
+ * Retrieves all gratitude notes received by a specific user across all their casts
+ * Shows appreciation history for cast creators
+ * Includes cast context and sender information
+ *
+ * Path parameters:
+ * - userId: UUID of the user whose received notes to fetch
  */
 export const getUserNotes = async (req, res) => {
   const { userId } = req.params;
 
   try {
+    // Get all notes left on casts created by the specified user
     const notes = await query(
       `SELECT gn.id,
               gn.content,
               gn.created_at,
-          c.title AS cast_title,
+              c.title AS cast_title,
               u.username AS sender_username
        FROM gratitude_notes gn
         JOIN casts c ON gn.cast_id = c.id
@@ -72,16 +96,19 @@ export const getUserNotes = async (req, res) => {
 };
 
 /**
- * GET NOTES SENT BY CURRENT USER
+ * Retrieves all gratitude notes sent by the currently authenticated user
+ * Shows user's own gratitude history across all casts they've appreciated
+ * Useful for tracking what appreciation they've given
  */
 export const getSentNotes = async (req, res) => {
   try {
+    // Get all notes sent by the authenticated user
     const notes = await query(
       `SELECT gn.id,
               gn.content,
               gn.created_at,
-          c.title AS cast_title,
-          c.id   AS cast_id
+              c.title AS cast_title,
+              c.id   AS cast_id
        FROM gratitude_notes gn
         JOIN casts c ON gn.cast_id = c.id
        WHERE gn.sender_id = $1
@@ -97,15 +124,25 @@ export const getSentNotes = async (req, res) => {
 };
 
 /**
- * UPDATE NOTE (Sender or Admin)
+ * Updates the content of an existing gratitude note
+ * Only the original sender or admin users can edit notes
+ * Preserves all other note metadata (timestamps, recipients, etc.)
+ *
+ * Path parameters:
+ * - id: UUID of the note to update
+ *
+ * Body parameters:
+ * - content: New note content (required)
  */
 export const updateNote = async (req, res) => {
   const { id } = req.params;
   const { content } = req.body;
 
+  // Validate required content field
   if (!content) return res.status(400).json({ error: "Content is required" });
 
   try {
+    // Update note with permission check - sender or admin only
     const result = await query(
       `UPDATE gratitude_notes gn
        SET content = $1
@@ -115,6 +152,7 @@ export const updateNote = async (req, res) => {
       [content, id, req.user.id, req.user.role],
     );
 
+    // Check if note was found and user has permission
     if (result.rowCount === 0) {
       return res
         .status(404)
@@ -129,12 +167,21 @@ export const updateNote = async (req, res) => {
 };
 
 /**
- * DELETE NOTE (Sender, Cast Creator, or Admin)
+ * Permanently deletes a gratitude note
+ * Multiple permission levels: sender, cast creator, or admin users
+ * Uses JOIN to verify permissions across note and cast ownership
+ *
+ * Path parameters:
+ * - id: UUID of the note to delete
  */
 export const deleteNote = async (req, res) => {
   const { id } = req.params;
 
   try {
+    // Delete with complex permission check:
+    // - Note sender can delete their own note
+    // - Cast creator can moderate notes on their casts
+    // - Admin users can delete any note
     const result = await query(
       `DELETE FROM gratitude_notes gn
        USING casts c
@@ -144,6 +191,7 @@ export const deleteNote = async (req, res) => {
       [id, req.user.id, req.user.role],
     );
 
+    // Check if note was found and user has permission
     if (result.rowCount === 0) {
       return res
         .status(404)

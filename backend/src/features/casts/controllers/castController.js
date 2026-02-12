@@ -1,34 +1,56 @@
+/**
+ * CAST MANAGEMENT CONTROLLER
+ * Handles live broadcasting sessions (previously called "pulses")
+ * Manages cast creation, updates, deletion, and feed retrieval with filtering
+ */
+
 import { query } from "../../../shared/config/db.js";
 import { logError } from "../../../shared/utils/logger.js";
 
+// ==========================================
+// PUBLIC CAST ENDPOINTS
+// ==========================================
+
 /**
- * GET CAST FEED
- * Fetches casts created within the last 24h. Supports channel filtering.
+ * Retrieves active live casts with filtering and search capabilities
+ * Shows casts created within the last 24 hours that are marked as live
+ * Supports filtering by skill category and text search
+ *
+ * Query parameters:
+ * - category: Filter by skill channel/category
+ * - q: Search in title, description, username, or skill name
  */
 export const getAllCasts = async (req, res) => {
   const { category, q } = req.query;
+
   try {
+    // Base query: Get live casts from last 24 hours with user and skill info
     let queryText = `
-            SELECT c.*, u.username, u.credit, s.name as skill_name, s.channel
-            FROM casts c
-            JOIN users u ON c.creator_id = u.id
-            JOIN skills s ON c.skill_id = s.id
-            WHERE c.is_live = true 
-            AND c.created_at > NOW() - INTERVAL '24 hours'`;
+      SELECT c.*, u.username, u.credit, s.name as skill_name, s.channel
+      FROM casts c
+      JOIN users u ON c.creator_id = u.id
+      JOIN skills s ON c.skill_id = s.id
+      WHERE c.is_live = true 
+      AND c.created_at > NOW() - INTERVAL '24 hours'`;
 
     const params = [];
+
+    // Add category filter if specified
     if (category) {
       params.push(category);
       queryText += ` AND s.channel = $${params.length}`;
     }
 
+    // Add text search across multiple fields if specified
     if (q) {
       params.push(`%${q}%`);
       const idx = params.length;
       queryText += ` AND (c.title ILIKE $${idx} OR c.description ILIKE $${idx} OR u.username ILIKE $${idx} OR s.name ILIKE $${idx})`;
     }
 
+    // Order by most recent first
     queryText += ` ORDER BY c.created_at DESC`;
+
     const casts = await query(queryText, params);
     res.json(casts.rows);
   } catch (err) {
@@ -37,13 +59,19 @@ export const getAllCasts = async (req, res) => {
   }
 };
 
+// ==========================================
+// PROTECTED CAST ENDPOINTS
+// ==========================================
+
 /**
- * BROADCAST CAST
- * Requirement 1.1: Must include a meeting link
+ * Creates a new live broadcast session
+ * Requires authentication and validates essential fields
+ * Meeting link is mandatory for live sessions
  */
 export const createCast = async (req, res) => {
   const { skill_id, title, description, meeting_link } = req.body;
 
+  // Validate required fields
   if (!meeting_link || !title) {
     return res
       .status(400)
@@ -51,11 +79,13 @@ export const createCast = async (req, res) => {
   }
 
   try {
+    // Create new cast with authenticated user as creator
     const newCast = await query(
       `INSERT INTO casts (creator_id, skill_id, title, description, meeting_link) 
-             VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
       [req.user.id, skill_id, title, description, meeting_link],
     );
+
     res.status(201).json(newCast.rows[0]);
   } catch (err) {
     logError("castController.createCast", err, { skill_id, title });
@@ -64,14 +94,16 @@ export const createCast = async (req, res) => {
 };
 
 /**
- * UPDATE CAST
- * Allows a creator (or admin) to edit the cast details.
+ * Updates an existing cast's details
+ * Only the cast creator or admins can update cast information
+ * Uses COALESCE to update only provided fields
  */
 export const updateCast = async (req, res) => {
   const { id } = req.params;
   const { skill_id, title, description, meeting_link, is_live } = req.body;
 
   try {
+    // Update cast with permission check in WHERE clause
     const updated = await query(
       `UPDATE casts
        SET skill_id = COALESCE($3, skill_id),
@@ -93,6 +125,7 @@ export const updateCast = async (req, res) => {
       ],
     );
 
+    // Check if cast was found and user has permission
     if (updated.rowCount === 0) {
       return res
         .status(404)
@@ -107,51 +140,28 @@ export const updateCast = async (req, res) => {
 };
 
 /**
- * DELETE CAST
- * Requirement 1.3: Admins or Creators only
+ * Permanently deletes a cast and all associated data
+ * Only the cast creator or admins can delete casts
+ * CASCADE constraints automatically handle related gratitude notes
  */
 export const deleteCast = async (req, res) => {
   try {
-    // Ownership check is built directly into the SQL WHERE clause
+    // Delete cast with ownership/admin permission check
     const result = await query(
       "DELETE FROM casts WHERE id = $1 AND (creator_id = $2 OR $3 = 'admin')",
       [req.params.id, req.user.id, req.user.role],
     );
 
-    if (result.rowCount === 0)
+    // Check if cast was found and user had permission
+    if (result.rowCount === 0) {
       return res
         .status(404)
         .json({ error: "Cast not found or permission denied" });
+    }
 
     res.json({ message: "Cast ended" });
   } catch (err) {
     logError("castController.deleteCast", err, { id: req.params.id });
     res.status(500).json({ error: "Deletion failed" });
-  }
-};
-
-/**
- * END CAST MANUALLY
- * Allows the creator to set is_live to false, removing it from the feed.
- */
-export const endCast = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await query(
-      "UPDATE casts SET is_live = false WHERE id = $1 AND creator_id = $2 RETURNING *",
-      [id, req.user.id], // Only the creator can end it
-    );
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Cast not found or unauthorized" });
-    }
-
-    res.json({
-      message: "Cast session ended successfully",
-      cast: result.rows[0],
-    });
-  } catch (err) {
-    logError("castController.endCast", err, { id });
-    res.status(500).json({ error: "Failed to end cast" });
   }
 };

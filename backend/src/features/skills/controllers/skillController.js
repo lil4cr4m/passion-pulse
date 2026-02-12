@@ -1,12 +1,27 @@
+/**
+ * SKILLS CATALOG CONTROLLER
+ * Manages the global skill/topic database and user skill profiles
+ * Handles skill discovery, user skill pinning, and admin catalog management
+ * Skills are organized by channels (categories) for better discovery
+ */
+
 import { query } from "../../../shared/config/db.js";
 import { logError } from "../../../shared/utils/logger.js";
 
+// ==========================================
+// PUBLIC SKILL ENDPOINTS
+// ==========================================
+
 /**
- * GET ALL SKILLS
- * Returns the global skill catalog (Requirement 1.5)
+ * Retrieves the complete global skills catalog
+ * Shows all available skills organized by channel (category)
+ * Used for skill discovery and cast creation selection
+ *
+ * Returns skills sorted alphabetically within each channel
  */
 export const getAllSkills = async (req, res) => {
   try {
+    // Get complete skill catalog ordered by channel then name
     const result = await query(
       "SELECT * FROM skills ORDER BY channel, name ASC",
     );
@@ -18,13 +33,18 @@ export const getAllSkills = async (req, res) => {
 };
 
 /**
- * GET USER'S SKILLS
- * Returns the skill list pinned to a specific user's profile.
+ * Retrieves skills pinned to a specific user's profile
+ * Shows what topics/expertise a user specializes in
+ * Public endpoint for profile viewing and instructor discovery
+ *
+ * Path parameters:
+ * - userId: UUID of the user whose skills to fetch
  */
 export const getUserSkills = async (req, res) => {
   const { userId } = req.params;
 
   try {
+    // Join user_skills mapping table with skills for full details
     const result = await query(
       `SELECT s.*
        FROM user_skills us
@@ -41,16 +61,26 @@ export const getUserSkills = async (req, res) => {
   }
 };
 
+// ==========================================
+// PROTECTED USER ENDPOINTS
+// ==========================================
+
 /**
- * ADD USER SKILL
- * Pins a skill to the user's persistent profile (Requirement 1.7)
+ * Pins a skill to the authenticated user's profile
+ * Allows users to showcase their expertise and interests
+ * Uses ON CONFLICT DO NOTHING to prevent duplicate pinning
+ *
+ * Body parameters:
+ * - skillId: UUID of the skill to pin to profile
  */
 export const addUserSkill = async (req, res) => {
   const { skillId } = req.body;
+
+  // Validate required skill ID
   if (!skillId) return res.status(400).json({ error: "No Skill ID provided" });
 
   try {
-    // Use user ID from JWT (req.user.id)
+    // Add skill to user's profile, ignore if already exists
     await query(
       "INSERT INTO user_skills (user_id, skill_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
       [req.user.id, skillId],
@@ -65,23 +95,34 @@ export const addUserSkill = async (req, res) => {
   }
 };
 
+// ==========================================
+// ADMIN-ONLY SKILL MANAGEMENT
+// ==========================================
+
 /**
- * ADMIN: CREATE SKILL
- * Creates a new skill/topic in the catalog
+ * Creates a new skill in the global catalog
+ * Admin-only operation to expand available topics
+ * Skills must have both name and channel (category)
+ *
+ * Body parameters:
+ * - name: The skill/topic name (e.g., "React Hooks")
+ * - channel: The category/channel (e.g., "Programming", "Design")
  */
 export const createSkill = async (req, res) => {
   const { name, channel } = req.body;
 
-  // Check if user is admin
+  // Verify admin access
   if (req.user?.role !== "admin") {
     return res.status(403).json({ error: "Admin access required" });
   }
 
+  // Validate required fields
   if (!name || !channel) {
     return res.status(400).json({ error: "Name and channel are required" });
   }
 
   try {
+    // Insert new skill into catalog
     const result = await query(
       "INSERT INTO skills (name, channel) VALUES ($1, $2) RETURNING *",
       [name, channel],
@@ -94,29 +135,43 @@ export const createSkill = async (req, res) => {
 };
 
 /**
- * ADMIN: UPDATE SKILL
- * Edits an existing skill/topic
+ * Updates an existing skill's details
+ * Admin-only operation to maintain catalog accuracy
+ * Can modify both name and channel classification
+ *
+ * Path parameters:
+ * - id: UUID of the skill to update
+ *
+ * Body parameters:
+ * - name: Required - Updated skill name
+ * - channel: Required - Updated channel/category
  */
 export const updateSkill = async (req, res) => {
   const { id } = req.params;
   const { name, channel } = req.body;
 
+  // Verify admin access
   if (req.user?.role !== "admin") {
     return res.status(403).json({ error: "Admin access required" });
   }
 
+  // Validate required fields
   if (!name || !channel) {
     return res.status(400).json({ error: "Name and channel are required" });
   }
 
   try {
+    // Update skill with new details
     const result = await query(
       "UPDATE skills SET name = $1, channel = $2 WHERE id = $3 RETURNING *",
       [name, channel, id],
     );
+
+    // Check if skill exists
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Skill not found" });
     }
+
     res.json(result.rows[0]);
   } catch (err) {
     logError("skillController.updateSkill", err, { id, name, channel });
@@ -125,24 +180,33 @@ export const updateSkill = async (req, res) => {
 };
 
 /**
- * ADMIN: DELETE SKILL
- * Removes a skill/topic from the catalog
+ * Permanently removes a skill from the catalog
+ * Admin-only operation with CASCADE implications
+ * Will affect existing casts and user profiles using this skill
+ *
+ * Path parameters:
+ * - id: UUID of the skill to delete
  */
 export const deleteSkill = async (req, res) => {
   const { id } = req.params;
 
+  // Verify admin access
   if (req.user?.role !== "admin") {
     return res.status(403).json({ error: "Admin access required" });
   }
 
   try {
+    // Delete skill from catalog
     const result = await query(
       "DELETE FROM skills WHERE id = $1 RETURNING id",
       [id],
     );
+
+    // Check if skill existed
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Skill not found" });
     }
+
     res.json({ message: "Skill deleted successfully" });
   } catch (err) {
     logError("skillController.deleteSkill", err, { id });
