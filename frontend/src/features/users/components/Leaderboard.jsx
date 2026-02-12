@@ -26,7 +26,7 @@ const Leaderboard = () => {
           to={`/profile/${leader.id}`}
           className="group grid grid-cols-[1.75rem_1fr_auto] items-center gap-[0.6rem] p-[1rem] hover:bg-yellow-muted/20 transition-all min-w-0"
         >
-          <span className="font-black italic text-black/40 text-[1rem] xl:text-[1.125rem] leading-none text-center">
+          <span className="font-black italic text-ink/40 text-[1rem] xl:text-[1.125rem] leading-none text-center">
             {index + 1}
           </span>
 
@@ -34,7 +34,7 @@ const Leaderboard = () => {
             <span className="font-black uppercase text-[0.95rem] xl:text-[1rem] leading-none tracking-tighter truncate">
               {leader.username}
             </span>
-            <span className="text-[0.6rem] xl:text-[0.625rem] font-black uppercase tracking-widest text-black/70 mt-[0.25rem] leading-tight">
+            <span className="text-[0.6rem] xl:text-[0.625rem] font-black uppercase tracking-widest text-ink/70 mt-[0.25rem] leading-tight">
               Level_{Math.floor(leader.credit / 100) + 1}
             </span>
           </div>

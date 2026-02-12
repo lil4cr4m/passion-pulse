@@ -33,7 +33,7 @@ const NotesForm = ({ castId, onNoteSent }) => {
   return (
     <div className="mt-3 p-4 bg-pink/15 border-3 border-ink shadow-brutal animate-in slide-in-from-top-2 duration-300">
       <h4 className="text-ink font-black flex items-center gap-2 mb-2 ">
-        <Heart size={18} className="text-pink" /> SEND_NOTES
+        <Heart size={18} className="text-danger" /> SEND_NOTES
       </h4>
       <p className="text-xs text-ink/70 mb-4 font-bold uppercase tracking-wide">
         Leaving a note awards the host +10 Credit!

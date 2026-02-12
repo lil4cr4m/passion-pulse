@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/context/AuthContext";
 import axios from "../../../shared/api/axios";
 import Button from "../../../shared/ui/Button";
-import { Trash2, Edit, Plus } from "lucide-react";
+import { Trash2, Edit, Plus, Award } from "lucide-react";
 
 export default function AdminUsers() {
   const { user } = useAuth();
@@ -82,6 +82,19 @@ export default function AdminUsers() {
           </Button>
         </div>
 
+        {/* Admin Credit Card - Matches Home.jsx styling */}
+        <div className="mb-12">
+          <div className="bg-yellow border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center gap-3 max-w-sm mx-auto">
+            <Award size={32} className="text-white" />
+            <div className="text-5xl font-black tabular-nums leading-tight text-center text-white">
+              {user?.credit || 0}
+            </div>
+            <div className="font-black text-[10px] uppercase tracking-widest italic text-white text-center">
+              Your_Credit
+            </div>
+          </div>
+        </div>
+
         {/* Error Alert */}
         {error && (
           <div className="mb-6 p-4 bg-pink border-4 border-ink text-ink font-bold">
@@ -117,7 +130,7 @@ export default function AdminUsers() {
                     <span
                       className={`font-bold px-3 py-1 border-2 border-ink ${
                         u.role === "admin"
-                          ? "bg-pink text-offwhite"
+                          ? "bg-pink text-white"
                           : "bg-offwhite text-ink"
                       }`}
                     >
@@ -154,7 +167,7 @@ export default function AdminUsers() {
                           className="p-2 bg-ink/30 border-2 border-ink cursor-not-allowed opacity-60"
                           title="Cannot delete yourself"
                         >
-                          <Trash2 size={16} className="text-gray-600" />
+                          <Trash2 size={16} className="text-ink/50" />
                         </button>
                       )}
                     </div>

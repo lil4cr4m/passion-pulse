@@ -27,6 +27,12 @@ const Profile = () => {
   const isOwnProfile = currentUser?.id?.toString() === id?.toString();
   const canManageReceived = isOwnProfile || currentUser?.role === "admin";
 
+  // Get the credit value - use profile data if available, fall back to currentUser
+  // For own profile, prefer profile data which is freshly fetched
+  // For others' profiles, use the fetched profile data
+  const displayCredit =
+    profile?.credit !== undefined ? profile.credit : currentUser?.credit;
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -136,12 +142,12 @@ const Profile = () => {
       {/* STATS GRID: Data pulled from users table */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-yellow border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center gap-3">
-          <Award size={32} />
-          <div className="text-5xl font-black tabular-nums leading-tight text-center">
-            {profile.credit}
+          <Award size={32} className="text-white" />
+          <div className="text-5xl font-black tabular-nums leading-tight text-center text-white">
+            {displayCredit}
           </div>
-          <div className="font-black text-[10px] uppercase tracking-widest italic opacity-60 text-center">
-            Credits
+          <div className="font-black text-[10px] uppercase tracking-widest italic text-white text-center">
+            Total_Credit
           </div>
         </div>
 

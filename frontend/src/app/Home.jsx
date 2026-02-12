@@ -28,13 +28,16 @@
  * - Implement real-time notifications
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search, Award } from "lucide-react";
 
 // CONTEXT & HOOKS
 // Access global authentication state (user data, login status)
 import { useAuth } from "../features/auth/context/AuthContext";
+
+// API
+import api from "../shared/api/axios";
 
 // FEATURE COMPONENTS
 // CastFeed: Displays list of skill posts with interactions
@@ -65,6 +68,25 @@ const Home = () => {
   // Provides: user object with {id, username, role, credit, etc.}
   const { user } = useAuth();
 
+  // � LOCAL USER STATE
+  // Stores freshly fetched user data to ensure credit is always current
+  const [currentUserData, setCurrentUserData] = useState(null);
+
+  // 🔄 FETCH LATEST USER DATA
+  // Ensures credit value is synced with database (not just cached in AuthContext)
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (!user?.id) return;
+      try {
+        const res = await api.get(`/users/profile/${user.id}`);
+        setCurrentUserData(res.data);
+      } catch (err) {
+        console.error("Error fetching current user data:", err);
+      }
+    };
+    fetchCurrentUser();
+  }, [user?.id]);
+
   // 📺 CHANNEL SELECTION (Future Feature)
   // Currently unused - planned for organizing casts by topic/skill
   const [activeChannel] = useState(null);
@@ -72,6 +94,10 @@ const Home = () => {
   // 🔍 SEARCH FUNCTIONALITY
   // Live search state for filtering the cast feed
   const [searchQuery, setSearchQuery] = useState("");
+
+  // 📊 DISPLAY DATA
+  // Use freshly fetched data if available, fall back to AuthContext user
+  const displayUser = currentUserData || user;
 
   return (
     <div className="max-w-layout mx-auto p-4 md:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -101,22 +127,22 @@ const Home = () => {
 
           {/* 👤 USERNAME - Stacked display with @ symbol */}
           <div>
-            <p className="text-[0.6rem] font-black uppercase tracking-widest text-black/60 mb-1">
+            <p className="text-[0.6rem] font-black uppercase tracking-widest text-ink/60 mb-1">
               Username
             </p>
-            <p className="text-xl font-black text-pink italic">
-              @{user?.username || "Guest"}
+            <p className="text-xl font-black text-danger italic">
+              @{displayUser?.username || "Guest"}
             </p>
           </div>
         </div>
 
         {/* 💰 TOTAL CREDIT CARD - Separated card with yellow styling */}
         <div className="bg-yellow border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center gap-3">
-          <Award size={32} />
-          <div className="text-5xl font-black tabular-nums leading-tight text-center">
-            {user?.credit || 0}
+          <Award size={32} className="text-white" />
+          <div className="text-5xl font-black tabular-nums leading-tight text-center text-white">
+            {displayUser?.credit || 0}
           </div>
-          <div className="font-black text-[10px] uppercase tracking-widest italic opacity-60 text-center">
+          <div className="font-black text-[10px] uppercase tracking-widest italic text-white text-center">
             Total_Credit
           </div>
         </div>
@@ -197,7 +223,7 @@ const Home = () => {
         <div className="bg-offwhite border-4 border-ink shadow-brutal-lg overflow-hidden">
           {/* 🏷️ LEADERBOARD HEADER with bright yellow accent */}
           <div className="p-[1.5rem] border-b-4 border-ink bg-yellow">
-            <h2 className="text-[1.25rem] font-black uppercase tracking-tighter leading-none">
+            <h2 className="text-[1.25rem] font-black uppercase tracking-tighter leading-none text-white">
               Top_Casters
             </h2>
           </div>

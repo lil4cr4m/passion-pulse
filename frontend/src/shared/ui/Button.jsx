@@ -60,28 +60,35 @@ export const Button = ({
   // 🎨 COLOR VARIANT DEFINITIONS
   // Each variant has specific background, text, and hover colors
   // Colors are defined in tailwind.config.js as custom theme colors
+  // All dark backgrounds use white text for WCAG AA contrast compliance
   const variants = {
     // ⚠️ YELLOW - Default, attention-getting, warnings
-    yellow: "bg-yellow text-ink hover:opacity-90",
+    // Deep saturated gold with white text for maximum contrast
+    yellow: "bg-yellow text-white hover:opacity-90",
 
     // 💜 VIOLET - Primary brand color, main CTAs
+    // Deep saturated purple with white text
     violet: "bg-violet text-white hover:opacity-90",
 
     // 💗 PINK - Destructive actions, errors
+    // Deep saturated magenta with white text
     pink: "bg-pink text-white hover:opacity-90",
 
     // 🩵 CYAN - Secondary actions, alternatives
-    cyan: "bg-cyan text-ink hover:opacity-90",
+    // Deep saturated teal with white text for high contrast
+    cyan: "bg-cyan text-white hover:opacity-90",
 
     // 🔴 DANGER - Destructive actions, delete, logout
+    // Deep saturated red with white text
     danger: "bg-danger text-white hover:opacity-90",
 
     // 🟢 NEON - High priority actions, create content
-    // Named "neon" for the vibrant, attention-getting quality
-    neon: "bg-neon text-ink hover:opacity-90",
+    // Deep saturated green with white text for maximum visibility
+    neon: "bg-neon text-white hover:opacity-90",
 
     // ⚪ OUTLINE - Subtle, secondary options
-    outline: "bg-offwhite text-ink hover:bg-violet-muted/20",
+    // Light background with ink text and violet accent on hover
+    outline: "bg-offwhite text-ink hover:bg-violet-muted hover:text-violet",
   };
 
   return (

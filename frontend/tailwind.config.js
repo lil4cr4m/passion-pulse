@@ -72,47 +72,54 @@ export default {
 
   theme: {
     extend: {
-      // 🎨 COLOR PALETTE - Neo-brutalism Color System
+      // 🎨 COLOR PALETTE - Neo-brutalism Color System (WCAG AA Compliant)
       // Each color serves specific UI purposes and emotional responses
+      // All colors meet WCAG AA contrast ratios (4.5:1 normal text, 3:1 large text)
       colors: {
         // ⚪ THE CANVAS
         offwhite: "#F4F4F4", // Slightly more "industrial" grey-white
         ink: "#121212", // "Rich Black" - feels more premium than #000
 
         // 🟣 PRIMARY BRAND (Creative/Energetic)
+        // Deep, saturated purple-violet - more dramatic and vibrant while compliant
         violet: {
-          DEFAULT: "#8B31FF", // Deepened for better white-text contrast
-          muted: "#D9BFFF", // For soft card backgrounds
+          DEFAULT: "#6D28D9", // Deep saturated violet (violet-700) - bold neo-brutal punch
+          muted: "#C4B5FD", // Light violet for secondary UI
         },
 
         // 🟡 REWARDS & CREDIT (Optimistic)
+        // Golden-amber with high saturation - cyber-gold feel while accessible
         yellow: {
-          DEFAULT: "#FFD100", // "Cyber Yellow"
-          muted: "#FFF2A1",
+          DEFAULT: "#B45309", // Deep saturated amber-gold (highly vibrant)
+          muted: "#FCD34D", // Light amber for secondary UI
         },
 
         // 🟢 LIVE STATUS (Vibrant/Active)
+        // Deep saturated green - maintains "electric live" feeling despite darker tone
         neon: {
-          DEFAULT: "#39FF14", // "Electric Lime"
-          muted: "#BCFFAC",
+          DEFAULT: "#166534", // Deep saturated green-800 (electric energy)
+          muted: "#86EFAC", // Light green for secondary UI
         },
 
         // 💗 ALERTS & GRATITUDE (Attention)
+        // Deep saturated magenta - stronger attention-grab than before
         pink: {
-          DEFAULT: "#FF2ECC", // "Hot Magenta"
-          muted: "#FFB3EB",
+          DEFAULT: "#9D174D", // Deep saturated pink-800 (hot magenta)
+          muted: "#F472B6", // Light pink for secondary UI
         },
 
         // 🔵 SYSTEM ACTIONS (Secondary/Links)
+        // Deep saturated cyan - maintains electric blue-cyan aesthetic
         cyan: {
-          DEFAULT: "#00F0FF", // "Electric Cyan"
-          muted: "#A1F9FF",
+          DEFAULT: "#0E7490", // Deep saturated cyan-700 (electric teal punch)
+          muted: "#67E8F9", // Light cyan for secondary UI
         },
 
         // 🔴 DESTRUCTIVE ACTIONS (Delete/Logout)
+        // Deep saturated red - urgent and dramatic
         danger: {
-          DEFAULT: "#FF4D4D", // High-visibility red
-          muted: "#FFB3B3",
+          DEFAULT: "#7F1D1D", // Deep saturated red-900 (high-impact red)
+          muted: "#FCA5A5", // Light red for secondary UI
         },
       },
 
