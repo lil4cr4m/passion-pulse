@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../api/axios";
+import api from "../../../shared/api/axios";
 import { Link } from "react-router-dom";
 
 const Leaderboard = () => {

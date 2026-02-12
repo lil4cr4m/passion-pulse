@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import axios from "../api/axios";
-import Button from "../components/ui/Button";
+import { useAuth } from "../../auth/context/AuthContext";
+import axios from "../../../shared/api/axios";
+import Button from "../../../shared/ui/Button";
 import { Trash2, Edit, Plus } from "lucide-react";
 
 export default function AdminUsers() {

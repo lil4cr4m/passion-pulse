@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../api/axios";
-import { useAuth } from "../context/AuthContext";
-import { Button } from "../components/ui/Button";
+import api from "../../../shared/api/axios";
+import { useAuth } from "../../auth/context/AuthContext";
+import { Button } from "../../../shared/ui/Button";
 import {
   User,
   Award,

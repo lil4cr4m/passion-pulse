@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios";
-import { Button } from "../components/ui/Button";
+import api from "../../../shared/api/axios";
+import { Button } from "../../../shared/ui/Button";
 import { Zap, Link as LinkIcon, Info, Layers } from "lucide-react";
 
 const CreateCast = () => {

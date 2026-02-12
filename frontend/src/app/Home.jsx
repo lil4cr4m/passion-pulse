@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
 
-import { useAuth } from "../context/AuthContext";
-import CastFeed from "../components/CastFeed";
-import Leaderboard from "../components/Leaderboard";
-import { Button } from "../components/ui/Button";
+import { useAuth } from "../features/auth/context/AuthContext";
+import CastFeed from "../features/casts/components/CastFeed";
+import Leaderboard from "../features/users/components/Leaderboard";
+import { Button } from "../shared/ui/Button";
 
 const Home = () => {
   // Access dynamic user data from the DB via AuthContext

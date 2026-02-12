@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { Button } from "../ui/Button";
-import CreditForm from "../CreditForm";
-import api from "../../api/axios";
+import { useAuth } from "../../auth/context/AuthContext";
+import { Button } from "../../../shared/ui/Button";
+import CreditForm from "./CreditForm";
+import api from "../../../shared/api/axios";
 import {
   ExternalLink,
   Heart,
@@ -95,6 +95,19 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
       </div>
 
       <div className="flex gap-3">
+        <a
+          href={cast.meeting_link}
+          target="_blank"
+          rel="noreferrer"
+          className="flex-1"
+        >
+          <Button
+            variant="violet"
+            className="w-full flex items-center justify-center gap-2"
+          >
+            JOIN_CAST <ExternalLink size={16} />
+          </Button>
+        </a>
         {user && !isOwner && (
           <Button
             variant="outline"
@@ -110,10 +123,12 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
       </div>
 
       {showCreditForm && (
-        <CreditForm
-          castId={cast.id}
-          onNoteSent={() => setTimeout(() => setShowCreditForm(false), 1500)}
-        />
+        <div className="mt-3 p-3 border-2 border-black rounded-xl bg-pink/10 animate-in slide-in-from-top-2 duration-300">
+          <CreditForm
+            castId={cast.id}
+            onNoteSent={() => setTimeout(() => setShowCreditForm(false), 1500)}
+          />
+        </div>
       )}
 
       {isOwner && (
@@ -151,7 +166,7 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
               <div className="flex gap-2">
                 <Button
                   type="submit"
-                  variant="cyan"
+                  variant="violet"
                   className="flex-1"
                   disabled={saving}
                 >
@@ -170,7 +185,7 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
           ) : (
             <div className="flex gap-2">
               <Button
-                variant="violet"
+                variant="cyan"
                 className="flex-1"
                 onClick={() => setEditMode(true)}
               >
@@ -178,7 +193,7 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
               </Button>
               <Button
                 type="button"
-                variant="pink"
+                variant="cyan"
                 className="flex-1"
                 onClick={handleDelete}
                 disabled={deleting}

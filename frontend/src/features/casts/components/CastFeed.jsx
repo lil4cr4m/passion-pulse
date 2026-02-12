@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../api/axios";
+import api from "../../../shared/api/axios";
 import CastCard from "./CastCard";
 
 const CastFeed = ({ selectedChannel, searchQuery }) => {

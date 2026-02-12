@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import api from "../api/axios";
+import api from "../../../shared/api/axios";
 import { Heart, Send } from "lucide-react";
-import { Button } from "./ui/Button";
+import { Button } from "../../../shared/ui/Button";
 
 const GratitudeForm = ({ castId, onNoteSent }) => {
   const [content, setContent] = useState("");

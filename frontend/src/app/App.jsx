@@ -2,19 +2,19 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // Context & Security
-import { AuthProvider } from "./context/AuthContext";
-import Protected from "./components/layout/Protected";
+import { AuthProvider } from "../features/auth/context/AuthContext";
+import Protected from "../shared/layout/Protected";
 
 // Layout Components
-import Navbar from "./components/layout/Navbar";
+import Navbar from "../shared/layout/Navbar";
 
 // Page Components
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Profile from "./pages/Profile";
-import EditProfile from "./pages/EditProfile";
-import CreateCast from "./pages/CreateCast";
-import AdminUsers from "./pages/AdminUsers";
+import Home from "./Home";
+import Login from "../features/auth/pages/Login";
+import Profile from "../features/users/pages/Profile";
+import EditProfile from "../features/users/pages/EditProfile";
+import CreateCast from "../features/casts/pages/CreateCast";
+import AdminUsers from "../features/users/pages/AdminUsers";
 
 /**
  * MAIN APP COMPONENT

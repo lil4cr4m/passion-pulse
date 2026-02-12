@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import api from "../api/axios";
-import { Button } from "../components/ui/Button";
+import api from "../../../shared/api/axios";
+import { Button } from "../../../shared/ui/Button";
 import {
   LogIn,
   UserPlus,
