@@ -27,15 +27,13 @@ const Profile = () => {
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
 
-  const formatDateSnake = (value) =>
-    new Date(value)
-      .toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })
-      .toUpperCase()
-      .replaceAll(" ", "_");
+  const formatDateSnake = (value) => {
+    const date = new Date(value);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}${month}${day}`;
+  };
 
   const toSnakeCase = (value) =>
     value
@@ -57,17 +55,17 @@ const Profile = () => {
 
   // Unarchive cast handler - restores archived cast to LIVE status
   const handleUnarchive = async (castId) => {
-    if (!window.confirm("RESTORE_THIS_CAST_TO_LIVE_STATUS?")) return;
+    if (!window.confirm("Restore to live?")) return;
 
     try {
       await api.put(`/casts/${castId}`, { status: "LIVE" });
       // Remove from archived list
       setArchivedCasts((prev) => prev.filter((c) => c.id !== castId));
       // Optionally show success message
-      alert("CAST_RESTORED_SUCCESSFULLY");
+      alert("Cast restored");
     } catch (err) {
       console.error("Error unarchiving cast:", err);
-      alert("FAILED_TO_RESTORE_CAST_PLEASE_TRY_AGAIN");
+      alert("Failed to restore");
     }
   };
 
@@ -127,7 +125,7 @@ const Profile = () => {
   }, [id, isOwnProfile, currentUser?.role]);
 
   const joinDate = profile?.created_at
-    ? formatDateSnake(profile.created_at).toLowerCase()
+    ? formatDateSnake(profile.created_at)
     : "unknown";
 
   if (!profile)
@@ -191,7 +189,7 @@ const Profile = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-yellow border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center gap-3">
           <Award size={32} className="text-white" />
-          <div className="text-5xl font-black tabular-nums leading-tight text-center text-white">
+          <div className="text-3xl font-black tabular-nums leading-tight text-center text-white">
             {displayCredit}
           </div>
           <div className="font-black text-[10px] uppercase tracking-widest italic text-white text-center">
@@ -201,7 +199,7 @@ const Profile = () => {
 
         <div className="bg-violet border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center text-white gap-3">
           <Activity size={32} />
-          <div className="text-5xl font-black tabular-nums leading-tight text-center">
+          <div className="text-3xl font-black tabular-nums leading-tight text-center">
             {profile.total_casts}
           </div>
           <div className="font-black text-[10px] uppercase tracking-widest italic opacity-70 text-center">
@@ -211,7 +209,7 @@ const Profile = () => {
 
         <div className="bg-pink border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center text-white gap-3">
           <Heart size={32} className="text-white" />
-          <div className="text-5xl font-black tabular-nums leading-tight text-center">
+          <div className="text-3xl font-black tabular-nums leading-tight text-center">
             {profile.notes_received}
           </div>
           <div className="font-black text-[10px] uppercase tracking-widest italic opacity-80 text-center">
@@ -219,12 +217,12 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="bg-white border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center gap-3 text-ink">
-          <CalendarDays size={32} className="text-ink" />
-          <div className="text-5xl font-black tabular-nums leading-tight text-center">
+        <div className="bg-cyan border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center text-white gap-3">
+          <CalendarDays size={32} />
+          <div className="text-3xl font-black tabular-nums leading-tight text-center">
             {joinDate}
           </div>
-          <div className="font-black text-[10px] uppercase tracking-widest italic text-ink/70 text-center">
+          <div className="font-black text-[10px] uppercase tracking-widest italic opacity-70 text-center">
             date_created
           </div>
         </div>
@@ -287,7 +285,7 @@ const Profile = () => {
                             );
                             setEditingNoteId(null);
                           } catch (err) {
-                            alert("UPDATE_FAILURE");
+                            alert("Update failed");
                           }
                         }}
                         className="space-y-3"
@@ -348,14 +346,14 @@ const Profile = () => {
                             variant="danger"
                             className="px-3 py-2"
                             onClick={async () => {
-                              if (!window.confirm("DELETE_SENT_NOTE?")) return;
+                              if (!window.confirm("Delete note?")) return;
                               try {
                                 await api.delete(`/notes/${note.id}`);
                                 setSentNotes((prev) =>
                                   prev.filter((n) => n.id !== note.id),
                                 );
                               } catch (err) {
-                                alert("DELETE_FAILURE");
+                                alert("Delete failed");
                               }
                             }}
                           >
@@ -431,19 +429,14 @@ const Profile = () => {
                         variant="danger"
                         className="px-3 py-2"
                         onClick={async () => {
-                          if (
-                            !window.confirm(
-                              "SCRUB_THIS_SIGNAL_FROM_YOUR_PROFILE?",
-                            )
-                          )
-                            return;
+                          if (!window.confirm("Delete this note?")) return;
                           try {
                             await api.delete(`/notes/${note.id}`);
                             setReceivedNotes((prev) =>
                               prev.filter((n) => n.id !== note.id),
                             );
                           } catch (err) {
-                            alert("SCRUB_FAILURE");
+                            alert("Delete failed");
                           }
                         }}
                       >

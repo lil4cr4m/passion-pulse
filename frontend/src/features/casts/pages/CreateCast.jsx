@@ -41,7 +41,7 @@ const CreateCast = () => {
       navigate("/"); // Redirect back to feed on success
     } catch (err) {
       console.error("Error creating cast:", err);
-      alert("BROADCAST_FAILURE: Ensure all fields are valid.");
+      alert("Check all fields");
     }
   };
 

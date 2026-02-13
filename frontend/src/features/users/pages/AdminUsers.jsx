@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/context/AuthContext";
 import axios from "../../../shared/api/axios";
 import Button from "../../../shared/ui/Button";
-import { Trash2, Edit, Plus, Award } from "lucide-react";
+import { Trash2, Edit, Plus } from "lucide-react";
 
 export default function AdminUsers() {
   const { user } = useAuth();
@@ -64,7 +64,7 @@ export default function AdminUsers() {
     <div className="min-h-screen bg-offwhite p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-12 border-b-4 pb-6">
+        <div className="flex justify-between items-center mb-12">
           <div>
             <h1 className="text-4xl font-black text-ink mb-2">
               ADMIN_USER_MANAGEMENT
@@ -80,19 +80,6 @@ export default function AdminUsers() {
           >
             <Plus size={18} /> CREATE_USER
           </Button>
-        </div>
-
-        {/* Admin Credit Card - Matches Home.jsx styling */}
-        <div className="mb-12">
-          <div className="bg-yellow border-3 border-ink p-6 rounded-3xl shadow-brutal flex flex-col items-center text-center gap-3 max-w-sm mx-auto">
-            <Award size={32} className="text-white" />
-            <div className="text-5xl font-black tabular-nums leading-tight text-center text-white">
-              {user?.credit || 0}
-            </div>
-            <div className="font-black text-[10px] uppercase tracking-widest italic text-white text-center">
-              YOUR_CREDIT
-            </div>
-          </div>
         </div>
 
         {/* Error Alert */}
@@ -183,10 +170,10 @@ export default function AdminUsers() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <div className="bg-offwhite border-4 border-ink p-8 shadow-brutal-xl max-w-md">
               <h2 className="text-2xl font-black text-ink mb-4">
-                CONFIRM_DELETION
+                Delete User?
               </h2>
               <p className="text-ink mb-6">
-                ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_USER_THIS_ACTION_CANNOT_BE_UNDONE
+                This action cannot be undone.
               </p>
               <div className="flex gap-4">
                 <Button

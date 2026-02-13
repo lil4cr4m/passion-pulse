@@ -106,29 +106,28 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
    */
 
   const handleStatusChange = async (newStatus) => {
-    if (newStatus === "ENDED" && !window.confirm("END_THIS_CAST_PERMANENTLY?"))
-      return;
+    if (newStatus === "ENDED" && !window.confirm("End this cast?")) return;
     setSaving(true);
     try {
       const res = await api.put(`/casts/${cast.id}`, { status: newStatus });
       onUpdate?.(res.data);
     } catch (err) {
       console.error("Error updating cast status:", err);
-      alert("UNABLE_TO_UPDATE_CAST_STATUS");
+      alert("Unable to update");
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("DELETE_THIS_CAST_PERMANENTLY?")) return;
+    if (!window.confirm("Delete this cast?")) return;
     setDeleting(true);
     try {
       await api.delete(`/casts/${cast.id}`);
       onDelete?.(cast.id);
     } catch (err) {
       console.error("Error deleting cast:", err);
-      alert("UNABLE_TO_DELETE_CAST_RIGHT_NOW");
+      alert("Unable to delete");
     } finally {
       setDeleting(false);
     }
@@ -143,7 +142,7 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
       setEditMode(false);
     } catch (err) {
       console.error("Error updating cast:", err);
-      alert("UPDATE_FAILED_PLEASE_CHECK_FIELDS_AND_TRY_AGAIN");
+      alert("Update failed. Check fields.");
     } finally {
       setSaving(false);
     }

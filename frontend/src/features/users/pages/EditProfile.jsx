@@ -44,7 +44,7 @@ const EditProfile = () => {
       navigate(`/profile/${user.id}`);
     } catch (err) {
       console.error("Error updating profile:", err);
-      alert("FAILED_TO_UPDATE_PROFILE_SIGNAL");
+      alert("Failed to update profile");
     } finally {
       setLoading(false);
     }

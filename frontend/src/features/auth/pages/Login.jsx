@@ -161,7 +161,7 @@ const Login = () => {
 
         // ✅ REGISTRATION SUCCESS - SWITCH TO LOGIN MODE
         setIsLogin(true);
-        alert("ACCOUNT_INITIALIZED_PLEASE_LOG_IN");
+        alert("Account created. Please log in.");
       }
     } catch (err) {
       // ❌ AUTHENTICATION FAILED

@@ -1,6 +1,6 @@
 # SkillCast
 
-**A neo-brutalist live casting platform for knowledge sharing, skill discovery, and gratitude-driven community engagement.**
+**A live casting platform for knowledge sharing, skill discovery, and gratitude-driven community engagement.**
 
 ## About SkillCast
 
@@ -18,7 +18,7 @@ SkillCast is an innovative community platform designed to democratize knowledge 
 
 ## Screenshot
 
-[Screenshot/Demo Video Coming Soon - Live application showcasing the neo-brutalist design and core features]
+![Alt Text](screenshots/app_interface.png)
 
 ## Getting Started
 
@@ -269,50 +269,14 @@ npm test  # Run Jest tests (when configured)
 - Delete user accounts with confirmation
 - Manage skill catalog (CRUD)
 
-## Presentation Highlights
-
-**For Stakeholders:**
-
-- 🎨 Modern, bold neo-brutalist design with intentional aesthetic
-- 💪 Complete CRUD operations with role-based security
-- 🏆 Gamified engagement (credit system, leaderboard)
-- 📊 Scalable architecture (UUID keys, stateless auth)
-- 🔒 Enterprise-ready security (bcrypt, JWT, HTTPS-ready)
-
-**For Developers:**
-
-- ⚡ Fast dev setup with Vite + Tailwind hot reload
-- 🧩 Modular React architecture (hooks, context, components)
-- 📚 Well-organized backend (controllers, routes, middleware)
-- 🗄️ Clean database schema with relationships documented
-- 📖 Comprehensive API documentation (DOCUMENTATION.md)
-
 ## Next Steps & Roadmap
 
-### Short-term Enhancements (Q2 2026)
+### Enhancements
 
 - Real-time notifications using WebSocket technology
 - Advanced search and filtering capabilities by skill, date, and popularity
 - Cast recording and replay functionality for asynchronous learning
 - Email notifications for cast invitations and new followers
-
-### Mid-term Features (Q3-Q4 2026)
-
-- Native mobile application (React Native for iOS/Android)
-- Admin analytics dashboard with engagement metrics
-- Skill proficiency badges and certifications
-- Premium subscription tier with exclusive features
-- Automated cast scheduling and recurring sessions
-
-### Long-term Vision (2027+)
-
-- OAuth2 and SSO integration for enterprise deployments
-- Learning Management System (LMS) connectivity
-- AI-powered skill recommendations and matching
-- Internationalization (i18n) for global audiences
-- Machine learning insights for career development
-
-See [DOCUMENTATION.md](./DOCUMENTATION.md) for technical debt items, known limitations, and detailed implementation roadmap.
 
 ## Contributing
 
@@ -323,15 +287,4 @@ See [DOCUMENTATION.md](./DOCUMENTATION.md) for technical debt items, known limit
 
 ## Support
 
-- **Issues:** GitHub Issues
-- **Questions:** DM maintainers or check team Slack
 - **Full Docs:** See [DOCUMENTATION.md](DOCUMENTATION.md) for API, database schema, component tree, and roadmap
-
-## License
-
-MIT – See LICENSE file for details
-
----
-
-**Last Updated:** February 12, 2026  
-**Built by:** SEB-60-Projects Team
