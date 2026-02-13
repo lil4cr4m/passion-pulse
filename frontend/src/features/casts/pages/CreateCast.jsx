@@ -100,7 +100,8 @@ const CreateCast = () => {
           {/* MEETING LINK: Essential for the 'Join' logic */}
           <div>
             <label className="flex items-center gap-2 mb-2 font-black uppercase text-xs italic">
-              <LinkIcon size={14} /> CAST_LINK_DISCORD_MEET_TWITCH_YOUTUBE_ZOOM_ETC
+              <LinkIcon size={14} />{" "}
+              CAST_LINK_DISCORD_MEET_TWITCH_YOUTUBE_ZOOM_ETC
             </label>
             <input
               type="url"

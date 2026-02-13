@@ -106,10 +106,7 @@ const CastCard = ({ cast, onUpdate, onDelete }) => {
    */
 
   const handleStatusChange = async (newStatus) => {
-    if (
-      newStatus === "ENDED" &&
-      !window.confirm("END_THIS_CAST_PERMANENTLY?")
-    )
+    if (newStatus === "ENDED" && !window.confirm("END_THIS_CAST_PERMANENTLY?"))
       return;
     setSaving(true);
     try {

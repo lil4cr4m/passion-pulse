@@ -167,9 +167,7 @@ const Login = () => {
       // ❌ AUTHENTICATION FAILED
       console.error("Authentication failed:", err);
       // Display user-friendly error message in app's style
-      setError(
-        err.response?.data?.error || "ACCESS_DENIED_CHECK_CREDENTIALS",
-      );
+      setError(err.response?.data?.error || "ACCESS_DENIED_CHECK_CREDENTIALS");
     }
   };
 
